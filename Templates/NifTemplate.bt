@@ -1,0 +1,130 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+// Define the headers
+LittleEndian(); 
+
+#include "nif/enums.bt"
+#include "nif/basic.bt"
+#include "nif/objects.bt"
+
+typedef struct {
+    if ( info_version <= 0x0A000102 )
+	    unsigned int unknown;
+	ShortString creator;
+	ShortString exportInfo1;
+	ShortString exportInfo2;
+    if ( info_userVersion >= 12 && info_userVersion2 >= 130 )
+        ShortString path;
+} ExportInfo;
+
+
+typedef struct {
+	unsigned int version;
+	unsigned int userVersion;
+	unsigned int userVersion2;
+	EndianType endian;
+	string creator;
+	string exportInfo1;
+	string exportInfo2;
+} NifInfo;
+
+typedef struct {
+	HeaderString headerString;
+    local int ver_start;
+	if ( SubStr(headerString.s, 0, 22) == "NetImmerse File Format" ) {
+		ver_start = 32;
+	} else if (SubStr(headerString.s, 0, 20) == "Gamebryo File Format" ) {
+		ver_start = 30;
+	} else if (SubStr(headerString.s, 0, 6) == "NDSNIF" ) {
+		ver_start = 30;
+	} else {
+		ver_start = 0;
+	}
+    local int majorver, minorver, patchver, buildver;
+    SScanf( SubStr(headerString.s, ver_start), "%d.%d.%d.%d", majorver, minorver, patchver, buildver); 
+    info_version = majorver << 24 | minorver << 16 | patchver << 8 | buildver;
+    // Printf("Info: %s %d,%d,%d,%d  %08x", SubStr(headerString.header, ver_start), majorver, minorver, patchver, buildver, info_version);
+    if ( info_version <= 0x03010000 )
+    	LineString copyright[3];
+    if ( info_version >= 0x0303000D)
+	    unsigned int version  <format=hex>;
+    if ( info_version >= 0x14000004 )
+	    EndianType endianType;
+    if ( info_version >= 0x0A010000 ) {
+	    unsigned int userVersion;
+        info_userVersion = userVersion;
+    }
+    if ( info_version >= 0x0303000D )
+	    unsigned int numBlocks;
+    if ( info_version >= 0x0A010000 )
+        if ( ((userVersion >= 10) || ((userVersion == 1) && (version != 0x0A020000))) ) {
+	        unsigned int userVersion2;
+            info_userVersion2 = userVersion2;
+        }
+    if ( info_version >= 0x1E000002 )
+	    unsigned int unknownInt3;
+    if ( ( info_version >= 0x0A000102 ) && ( info_version <= 0x0A000102 ) )
+	    ExportInfo exportInfo;
+    if ( info_version >= 0x0A010000 ) 
+        if ( ((userVersion >= 10) || ((userVersion == 1) && (version != 0x0A020000))) )
+            ExportInfo exportInfo;
+
+    if ( info_version >= 0x0A000100 ) {
+	    unsigned short numBlockTypes;
+        if (numBlockTypes > 0) {
+	        NifString blockTypes[numBlockTypes] <optimize=false>;
+	        unsigned short blockTypeIndex[numBlocks];
+            if ( info_version >= 0x14020007 )
+	            unsigned int blockSize[numBlocks];
+        }
+    }
+    if ( info_version >= 0x14010003 ) {
+	    unsigned int numStrings;
+	    unsigned int maxStringLength;
+        NifString strings[numStrings] <optimize=false>;
+    }
+	unsigned int unknownInt2;
+
+} Header;
+
+// Define the headers
+LittleEndian(); 
+
+void DumpBlocks(int64 blockStart, Header& header) {
+    
+    local int block_idx, typeIdx;
+    local int64 blockPos, blockSize;
+    local string blockType;
+
+    blockPos = blockStart;
+    for (block_idx=0; block_idx<header.numBlocks; ++block_idx) {
+        // FSeek(blockStart);
+        typeIdx = header.blockTypeIndex[block_idx];
+        blockSize = header.blockSize[block_idx];
+        blockType = ReadNifString(header.blockTypes[typeIdx]);
+        Printf("%4d | %-50s | %08x - %08x | %8d - %8d | (%8d)\n", 
+            block_idx, blockType,
+            blockPos, blockPos+blockSize-1,
+            blockPos, blockPos+blockSize-1,
+            blockSize);
+        blockPos += blockSize;
+    }
+    FSeek(blockStart);
+}
+
+local string ext = FileNameGetExtension(GetFileName());
+if (Stricmp(ext,".NIF") == 0) {
+    // NifInfo version info used in decompiling
+    local unsigned int info_version, info_userVersion, info_userVersion2;
+    Header header;
+    DumpBlocks(FTell(), header);    
+}

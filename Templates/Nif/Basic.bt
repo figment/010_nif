@@ -1,0 +1,202 @@
+//--------------------------------------
+//--- 010 Editor v6.0.3 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+// Define the headers
+LittleEndian(); 
+
+typedef unsigned char	byte;
+
+typedef struct { string s; } HeaderString <read=ReadHeaderString,size=SizeHeaderString>;
+
+string ReadHeaderString( HeaderString &s )
+{
+    local int size;
+    local char data[];
+    data = ReadLine(startof(s), 50, true);
+    RegExSearch(data, "[^\n]*\n", size);
+    FSeek(startof(s)+size);
+    return SubStr(data, 0, size);
+}
+
+int SizeHeaderString(HeaderString &s) {
+    local int size;
+    local char data[];
+    data = ReadLine(startof(s), 50, true);
+    RegExSearch(data, "[^\n]*\n", size);
+    return size;
+}
+
+typedef struct {
+    uchar len;
+	string str;
+}  ShortString <read=ReadShortString,size=SizeShortString>;
+
+string ReadShortString( ShortString &s ) { 
+    local uchar len = ReadUByte();
+    return ReadString(startof(s)+1, len); 
+}
+int SizeShortString(ShortString &s) { 
+    local uchar len = ReadUByte();
+    return len + 1; 
+}
+
+typedef struct {
+    int len;
+	string str;
+} NifString <read=ReadNifString,size=SizeNifString,comment=CommentNifString>;
+
+string ReadNifString( NifString &s ) { 
+    local int len = ReadInt(startof(s));
+    return ReadString(startof(s)+4, len); 
+}
+int SizeNifString( NifString &s) {
+    local int len = ReadInt(startof(s));
+    return 4 + len; 
+}
+string CommentNifString( NifString &s ) { 
+    return SubStr(s.str, 0, s.len); 
+}
+
+
+typedef struct {
+	string line;
+}  LineString <read=ReadLineString,size=SizeLineString>;
+
+string ReadLineString( LineString &s )
+{
+    local int size;
+    local char data[];
+    data = ReadLine(startof(s), 50, true);
+    RegExSearch(data, "[^\n]*\n", size);
+    return SubStr(data, 0, size);
+}
+
+int SizeLineString(LineString &s) {
+    local int size;
+    local char data[];
+    data = ReadLine(startof(s), 50, true);
+    RegExSearch(data, "[^\n]*\n", size);
+    return size;
+}
+
+typedef struct {
+    int value;
+} IndexString <name="string",comment=CommentIndexString>;
+
+
+string CommentIndexString(IndexString& obj) {
+    local char buffer[256];
+    if (exists(header)) {
+        local string name = CommentNifString(header.strings[obj.value]);
+        SPrintf(buffer, "[%2d] %s", obj.value, name );
+        return buffer;
+    } else {
+        SPrintf(buffer, "%d", obj.value);
+        return buffer;
+    }
+}
+
+struct Char8String {
+    string value;
+} ;
+
+
+//struct Ref {     int value; };
+typedef int Ref;
+
+/*! Stores 2D texture coordinates as two floating point variables, u and v. */
+struct TexCoord {
+	float u; /*!< The U value in this coordinate pair. */ 
+	float v; /*!< The V value in this coordinate pair. */ 
+};
+
+struct Vector3 {
+	float x; /*!< The X component of this vector. */ 
+	float y; /*!< The Y component of this vector. */ 
+	float z; /*!< The Z component of this vector. */ 
+};
+
+typedef struct {
+	unsigned short v1; /*!< The index of the first vertex. */ 
+	unsigned short v2; /*!< The index of the second vertex. */ 
+	unsigned short v3; /*!< The index of the third vertex. */ 
+} Triangle <comment=CommentTriangle>;
+string CommentTriangle(Triangle &tri) {
+    local char buffer[32];
+    SPrintf(buffer, "%4d,%4d,%4d", tri.v1, tri.v2, tri.v3);
+    return buffer;
+}
+
+/*!Represents a position or direction in 3D space*/
+struct Vector4 {
+	float x; /*!< The X component of this vector. */ 
+	float y; /*!< The Y component of this vector. */ 
+	float z; /*!< The Z component of this vector. */ 
+	float w; /*!< The W component of this vector. */ 
+};
+
+struct Float2 {
+	float data[2]; /*!< The two floating point numbers stored as an array. */ 
+};
+struct Matrix22 {
+	Float2 rows[2];  /*!< The two rows of Float2 structures which hold two floating point numbers each. */ 
+};
+
+/* Stores three floating point numbers.  Used as a row of a Matrix33 and to store the data in attr_vector3 and attr_color3 type attributes. */
+struct Float3 {
+	float data[3]; /*!< The three floating point numbers stored as an array. */ 
+};
+
+/*! Stores a 3 by 3 matrix used for rotation. */
+struct Matrix33 {
+	Float3 rows[3]; /*!< The three rows of Float3 structures which hold three floating point numbers each. */ 
+};
+/* Stores four floating point numbers.  Used as a row of a Matrix44. */
+struct Float4 {
+	float data[4]; /*!< The four floating point numbers stored as an array. */ 
+};
+/*! Stores a 4 by 4 matrix used for combined transformations. */
+struct Matrix44 {
+	Float4 rows[4]; /*!< The three rows of Float3 structures which hold three floating point numbers each. */ 
+};
+
+/*! Stores a color along with alpha translucency */
+struct Color4 {
+	float r; /*!< The red component of this color.  Should be between 0.0f and 1.0f. */ 
+	float g; /*!< The green component of this color.  Should be between 0.0f and 1.0f. */ 
+	float b; /*!< The blue component of this color.  Should be between 0.0f and 1.0f. */ 
+	float a; /*!< The alpha translucency component of this color.  Should be between 0.0f and 1.0f. */ 
+};
+
+/*! Represents a quaternion - a 4D extention of complex numbers used as an alternitive to matrices to represent rotation.*/
+struct Quaternion {
+	float w; /*!< The W scalar component of this Quaternion. */ 
+	float x; /*!< The X vector component of this Quaternion. */ 
+	float y; /*!< The Y vector component of this Quaternion. */ 
+	float z; /*!< The Z vector component of this Quaternion. */ 
+};
+
+/*! Stores a 4 by 3 matrix used for tensors. */
+struct InertiaMatrix {
+	Float4 rows[3]; /*!< The three rows of Float3 structures which hold three floating point numbers each. */ 
+};
+
+/*! Bounding box. */
+struct BoundingBox {
+	/*! Usually 1. */
+	unsigned int unknownInt;
+	/*! Translation vector. */
+	Vector3 translation;
+	/*! Rotation matrix. */
+	Matrix33 rotation;
+	/*! Radius, per direction. */
+	Vector3 radius;
+};

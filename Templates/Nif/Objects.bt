@@ -1,0 +1,141 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+// Define the headers
+LittleEndian(); 
+
+typedef unsigned char	byte;
+typedef unsigned char	bool;
+
+typedef struct {
+
+//	if ( (info_userVersion >= 12) ) {
+//		if ( IsDerivedType(BSLightingShaderProperty::TYPE) ) {
+//	        /* Configures the main shader path */
+//	        BSLightingShaderPropertyShaderType skyrimShaderType;
+//		};
+//	};
+
+	/*! Name of this controllable object, used to refer to the object in .kf files. */
+	IndexString name;
+	if ( info_version <= 0x02030000 ) {
+	    /*! Extra data for pre-3.0 versions. */
+	    bool hasOldExtraData;
+		if ( hasOldExtraData ) {
+	        /*! (=NiStringExtraData) */
+	        IndexString oldExtraPropName;
+	        /*! ref */
+	        unsigned int oldExtraInternalId;
+	        /*! Extra string data. */
+	        IndexString oldExtraString;
+		};
+	    /*! Always 0. */
+	    byte unknownByte;
+	};
+	if ( ( info_version >= 0x03000000 ) && ( info_version <= 0x04020200 ) ) {
+	    /*! Extra data object index. (The first in a chain) */
+	    Ref extraData;
+	};
+	if ( info_version >= 0x0A000100 ) {
+	    /*! The number of Extra Data objects referenced through the list. */
+	    unsigned int numExtraDataList;
+	    if (numExtraDataList > 0)
+	        Ref extraDataList[numExtraDataList];
+	};
+    if ( info_version >= 0x03000000 ) {
+	    /*! Controller object index. (The first in a chain) */
+	    Ref controller;
+    }
+} NiObject <name="NiObject", comment=CommentNiObject>;
+
+string CommentNiObject(NiObject& obj) {
+    if (exists(header))
+        return CommentNifString(header.strings[obj.name.value]);
+    return "";
+}
+
+typedef struct {
+    NiObject base;
+
+	if ( info_version >= 0x03000000 ) {
+	    /*! Some flags; commonly 0x000C or 0x000A. */
+	    unsigned short flags;
+	};
+	if ( ( info_version >= 0x14020007 ) && ( ((info_userVersion >= 11) && (info_userVersion2 > 26)) ) ) {
+	    /*! Unknown Flag */
+	    unsigned short unknownShort1;
+	};
+	/*! The translation vector. */
+	Vector3 translation;
+	/*! The rotation part of the transformation matrix. */
+	Matrix33 rotation;
+	/*! Scaling part (only uniform scaling is supported). */
+	float scale;
+	if ( info_version <= 0x04020200 ) {
+	    /*! Unknown function. Always seems to be (0, 0, 0) */
+	    Vector3 velocity;
+	}
+	if ((info_version < 0x14020007) || (info_userVersion <= 11)) {
+	    /*! The number of property objects referenced. */
+	    unsigned int numProperties;
+	    /*! List of node properties. */
+        if (numProperties > 0)
+	        Ref properties[numProperties];
+	}
+	if ( info_version <= 0x02030000 ) {
+	    /*! Always 2,0,2,0. */
+	    unsigned int unknown1[4];
+	    /*! 0 or 1. */
+	    byte unknown2;
+	}
+
+	if ( ( info_version >= 0x03000000 ) && ( info_version <= 0x04020200 ) ) {
+	    /*! Do we have a bounding box? */
+	    bool hasBoundingBox;
+		if ( hasBoundingBox ) {
+	        /*! The bounding box. */
+	        BoundingBox boundingBox;
+		}
+	}
+	/*!
+	 * Refers to NiCollisionObject, which is usually a bounding box or other simple
+	 * collision shape.  In Oblivion this links the Havok objects.
+	 */
+    if ( info_version >= 0x0A000100 ) {
+	    Ref collisionObject;
+    }
+} NiAVObject <name="NiAVObject", comment=CommentNiAVObject>;
+
+string CommentNiAVObject(NiAVObject& obj) {
+    return CommentNiObject(obj.base);
+}
+
+
+typedef struct  {
+    NiAVObject base;
+	/*! The number of child objects. */
+	unsigned int numChildren;
+	/*! List of child node object indices. */
+    if (numChildren > 0)
+	    Ref children[numChildren];
+
+    if (!(info_userVersion == 12 && info_userVersion2 >= 130)) {
+	    /*! The number of references to effect objects that follow. */
+	    unsigned int numEffects;
+	    /*! List of node effects. ADynamicEffect? */
+        if (numEffects > 0)
+	        Ref effects[numEffects];
+    }
+} NiNode <name="NiNode", comment=CommentNiNode>;
+
+string CommentNiNode(NiNode& obj) {
+    return CommentNiAVObject(obj.base);
+}

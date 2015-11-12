@@ -1,0 +1,98 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:     NIF_fallout4.bt
+// Author:   figment
+// Revision:
+// Purpose:  Base Fallout 4 objects.  
+//           Will be moved to nif folder later but convenient here for now
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+#include "NifTemplate.bt"
+
+if( !exists( header ) ) {
+    Printf("Invalid Nif File");
+    Exit(-1);
+}
+
+// Define the headers
+LittleEndian(); 
+
+typedef unsigned char	byte;
+typedef unsigned char	bool;
+
+struct BSSubIndexTriShape {
+    NiAVObject base;
+    int unknown[4];
+    Ref Skin;
+    Ref unk;
+    Ref unk;
+    int unknown <format=hex>;
+    int numVertices10 <format=hex,comment="0x10 larger than vert size">;
+    int numTris;
+    ushort numVerts;
+    int unknown;
+    struct Vert {
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+        // ushort unknown;
+    } verts[numVerts];
+    Triangle tris[numTris];
+    int numTris;
+    int numUnk;
+    int numUnk;
+    struct UnknownStruct {
+        int unknown;
+        int unknown;
+        int unknown;
+        int unknown;
+    };
+    if (numUnk > 0)
+        UnknownStruct unknowns[numUnk] <optimize=false>;
+};
+
+//info_version = 0x14020007;
+//info_userVersion = 12;
+//info_userVersion2 = 130;
+
+void LoadBlocks(int64 blockStart, Header& header) {
+    local int block_idx, typeIdx;
+    local int64 blockPos, blockSize;
+    local string blockType;
+
+
+    blockPos = blockStart;
+    for (block_idx=0; block_idx<header.numBlocks; ++block_idx) {
+        FSeek(blockPos);
+        typeIdx = header.blockTypeIndex[block_idx];
+        blockSize = header.blockSize[block_idx];
+        blockType = ReadNifString(header.blockTypes[typeIdx]);
+
+        if (Strcmp(blockType, "NiNode") == 0)
+            NiNode node;
+        if (Strcmp(blockType, "BSSubIndexTriShape") == 0)
+            BSSubIndexTriShape shape;
+
+        blockPos += blockSize;
+    }
+}
+
+LoadBlocks(FTell(), header);
