@@ -21,7 +21,42 @@ if( !exists( header ) ) {
 LittleEndian(); 
 
 typedef unsigned char	byte;
-typedef unsigned char	bool;
+
+typedef struct  {
+    hfloat x;
+    hfloat y;
+    hfloat z;
+    hfloat unk ;
+    hfloat ux;
+    hfloat uy;
+    hfloat unk;
+    ushort unk <format=hex>;
+    hfloat point;
+    hfloat point;
+    int unk;
+} VERTDATA <name="Vertices">;
+
+typedef struct  {
+    hfloat x;
+    hfloat y;
+    hfloat z;
+    hfloat unk ;
+    hfloat ux;
+    hfloat uy;
+    hfloat unk;
+    ushort unk <format=hex>;
+    hfloat point;
+    hfloat point;
+    hfloat notable;
+    hfloat point;
+    hfloat point;
+    hfloat point;
+    byte unknown <format=hex>;
+    byte unknown <format=hex>;
+    byte unknown <format=hex>;
+    byte unknown <format=hex>;
+    // ushort unknown;
+} VERTDATA2 <name="Vertices">;
 
 typedef struct {
     NiAVObject base;
@@ -37,28 +72,25 @@ typedef struct {
     byte flags02;           // 9C
     byte flags03;
     byte flags04;
-    typedef struct  {
-        hfloat x;
-        hfloat y;
-        hfloat z;
-        hfloat unk ;
-        hfloat ux;
-        hfloat uy;
-        hfloat unk;
-        ushort unk <format=hex>;
-        hfloat point;
-        hfloat point;
-        hfloat notable;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-        // ushort unknown;
-    } VERTDATA <name="Vertices">;
-    struct VERTDATA verts[numVerts];
+    VERTDATA verts[numVerts];
+    Triangle tris[numTris];
+} BSTriShape <name="BSTriShape">;
+
+typedef struct {
+    NiAVObject base;
+    int unknown[4];
+    Ref Skin;
+    Ref unk;
+    Ref unk;
+    int unknown <format=hex>;
+    int numVertices10 <format=hex,comment="0x10 larger than vert size">;
+    int numTris;
+    ushort numVerts;
+    byte flags01;
+    byte flags02;           // 9C
+    byte flags03;
+    byte flags04;
+    VERTDATA2 verts[numVerts];
     Triangle tris[numTris];
     int numTris;
     int numUnk;
@@ -67,28 +99,49 @@ typedef struct {
         int unknown;
         int unknown;
         int unknown;
-        int unknown;
+        int numStuff;
+        typedef struct {
+            int unknown;
+            int unknown;
+            int unknown;
+            int unknown;
+        } UnknownStuff; 
+        if (numStuff > 0)
+            UnknownStuff stuff[numStuff];
     };
     if (numUnk > 0)
         UnknownStruct unknowns[numUnk] <optimize=false>;
 } BSSubIndexTriShape <name="BSSubIndexTriShape">;
 
-typedef struct  {
-} BSSkin_Instance <name="BSSkin::Instance">;
+typedef struct {
+    int unk;
+    short unk;
+    short unk;
+    short unk;
+    int unk;
+} bhkNPCollisionObject <name="bhkNPCollisionObject">;
 
-typedef struct  {
-} BSSkin_BoneData <name="BSSkin::BoneData">;
+typedef struct {
+    int blobSize;
+    char blob[blobSize] <format=hex>;
+} bhkPhysicsSystem <name="bhkPhysicsSystem">;
 
-//info_version = 0x14020007;
-//info_userVersion = 12;
-//info_userVersion2 = 130;
+
+
+local bool isFallout4 = false;
+if (info_userVersion == 12 && info_userVersion2 == 130)
+    isFallout4 = true;
 
 void LoadBlocks(int64 blockStart, Header& header) {
     local int block_idx, typeIdx;
     local int64 blockPos, blockSize, blockEnd;
     local string blockType;
-    local int skip_check, wrote_header;
+    local int skip_check, wrote_header, missing_check;
     local int diff, curPos;
+
+#define WRITE_HEADER if (wrote_header == 0) { \
+                Printf("\nErrors:\n"); \
+                wrote_header = 1; }
 
     wrote_header = 0;
     blockPos = blockStart;
@@ -99,10 +152,11 @@ void LoadBlocks(int64 blockStart, Header& header) {
         blockType = ReadNifString(header.blockTypes[typeIdx]);
         blockEnd = blockPos + blockSize;
 
-//        if (Strcmp(blockType, "NiNode") == 0)
-//            NiNode node;
         skip_check = 0;
-        if (Strcmp(blockType, "BSSubIndexTriShape") == 0)
+        if (Strcmp(blockType, "NiNode") == 0)
+            // NiNode node;
+            skip_check = 1;
+        else if (Strcmp(blockType, "BSSubIndexTriShape") == 0)
             BSSubIndexTriShape shape;
         else if (Strcmp(blockType, "BSSkin::Instance") == 0)
             BSSkin_Instance skin;
@@ -110,18 +164,30 @@ void LoadBlocks(int64 blockStart, Header& header) {
             BSSkin_BoneData data;
         else if (Strcmp(blockType, "BSLightingShaderProperty") == 0)
             BSLightingShaderProperty property;
-        else
+        else if (Strcmp(blockType, "BSShaderTextureSet") == 0)
+            BSShaderTextureSet textureSet;
+        else if (Strcmp(blockType, "BSXFlags") == 0)
+            BSXFlags flags;
+        else if (Strcmp(blockType, "bhkNPCollisionObject") == 0)
+            bhkNPCollisionObject coll;
+        else if (Strcmp(blockType, "bhkPhysicsSystem") == 0)
+            bhkPhysicsSystem physics;
+        else if (Strcmp(blockType, "BSTriShape") == 0)
+            BSTriShape shape;
+        
+
+        else {
+            WRITE_HEADER;
+            Printf("%4d | %-50s | Missing\n", block_idx, blockType);
             skip_check = 1;
+        }
 
-
+        // print out mismatch errors
         if (!skip_check) {
             curPos = FTell();
             diff = blockEnd - curPos;
             if ( diff != 0 ) {
-                if (wrote_header == 0) {
-                    Printf("\nErrors:\n");
-                    wrote_header = 1;
-                }
+                WRITE_HEADER;
                 Printf("%4d | %-50s | %5d | %5d != %5d | %5d\n",
                  block_idx, blockType, blockPos, blockEnd, curPos, diff);
             }

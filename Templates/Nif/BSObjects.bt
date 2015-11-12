@@ -41,7 +41,6 @@ typedef struct {
 
     NiProperty base;
 
-
 	if ( (info_userVersion == 12) ) {
 	    /*! Skyrim Shader Flags for setting render/shader options. */
 	    SkyrimShaderPropertyFlags1 shaderFlags1;
@@ -59,6 +58,10 @@ typedef struct {
 	Color3 emissiveColor;
 	/*! Multiplied emissive colors */
 	float emissiveMultiple;
+
+    if (isFallout4)
+        int forty_two <comment="New: Fallout 4">;
+
 	/*! How to handle texture borders. */
 	TexClampMode textureClampMode;
 	/*! The materials opacity (1=non-transparent). */
@@ -75,9 +78,24 @@ typedef struct {
 	float lightingEffect1;
 	/*! Controls strength for envmap/backlight/rim/softlight lighting effect? */
 	float lightingEffect2;
+
+
+    if (isFallout4) {
+        float unk <comment="0">;
+        float unk <comment="0.502">;
+        float unk <comment="5">;
+        float unk <comment="0.25">;
+        float unk <comment="1.7">;
+        float unk <comment="0.4">;
+        float unk <comment="2">;
+        float unk <comment="0.75">;
+        float unk <comment="0.3">;
+    }
 	if ( (skyrimShaderType == 1) ) {
 	    /*! Scales the intensity of the environment/cube map. (0-1) */
 	    float environmentMapScale;
+        if (isFallout4)
+            ushort unk;
 	};
 	if ( (skyrimShaderType == 5) ) {
 	    /*! Tints the base texture. Overridden by game settings. */
@@ -115,4 +133,61 @@ typedef struct {
 	    /*! Offset to set center for right eye cubemap */
 	    Vector3 rightEyeReflectionCenter;
 	}
+
+
 } BSLightingShaderProperty <name="BSLightingShaderProperty">;
+
+
+
+typedef struct  {
+    int unk;
+    Ref boneData <comment="BSSkin::BoneData">;
+    int numBones;
+    Ref bones[numBones];
+    int unk;
+} BSSkin_Instance <name="BSSkin::Instance">;
+
+typedef struct {
+    uint numBones;
+    struct BSSkin_BoneTrans {
+        Vector3 bsphere <comment="?">;
+        float bsrad <comment="?">;
+        Vector3 rot[3];
+        Vector3 trans;
+        float scale;
+    } bones[numBones]<name="bones",optimize=false>;
+} BSSkin_BoneData <name="BSSkin::BoneData">;
+
+
+typedef struct {
+	/*! Number of Textures */
+	int numTextures;
+	/*!
+	 * Textures.
+	 *             0: Diffuse
+	 *             1: Normal/Gloss
+	 *             2: Glow(SLSF2_Glow_Map)/Skin/Hair/Rim light(SLSF2_Rim_Lighting)
+	 *             3: Height/Parallax
+	 *             4: Environment
+	 *             5: Environment Mask
+	 *             6: Subsurface for Multilayer Parallax
+	 *             7: Back Lighting Map (SLSF2_Back_Lighting)
+	 */
+	NifString textures[numTextures]<optimize=false>;
+} BSShaderTextureSet <name="BSShaderTextureSet">;
+
+
+/*!
+ * Controls animation and collision.  Integer holds flags:
+ *         Bit 0 : enable havok, bAnimated(Skyrim)
+ *         Bit 1 : enable collision, bHavok(Skyrim)
+ *         Bit 2 : is skeleton nif?, bRagdoll(Skyrim)
+ *         Bit 3 : enable animation, bComplex(Skyrim)
+ *         Bit 4 : FlameNodes present, bAddon(Skyrim)
+ *         Bit 5 : EditorMarkers present
+ *         Bit 6 : bDynamic(Skyrim)
+ *         Bit 7 : bArticulated(Skyrim)
+ *         Bit 8 : bIKTarget(Skyrim)
+ *         Bit 9 : Unknown(Skyrim)
+ */
+typedef NiIntegerExtraData BSXFlags <name="BSXFlags">;

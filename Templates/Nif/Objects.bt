@@ -216,3 +216,25 @@ typedef struct {
 
 } NiSkinInstance;
 
+
+
+typedef struct {
+    if ( info_version >= 0x0A000100 ) {
+	    /*! Name of this object. */
+	    IndexString name;
+    }
+    if ( info_version <= 0x04020200 ) {
+	    /*! Block number of the next extra data object. */
+	    Ref nextExtraData <comment="NiExtraData">;
+    }
+} NiExtraData <name="NiIntegerExtraData">;
+
+
+
+typedef struct {
+    NiExtraData base;
+
+	/*! The value of the extra data. */
+	unsigned int integerData;
+} NiIntegerExtraData <name="NiIntegerExtraData">;
+

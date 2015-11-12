@@ -55,6 +55,7 @@ typedef struct {
 
 string ReadNifString( NifString &s ) { 
     local int len = ReadInt(startof(s));
+    if (len == 0) return "";
     return ReadString(startof(s)+4, len); 
 }
 int SizeNifString( NifString &s) {
@@ -62,6 +63,7 @@ int SizeNifString( NifString &s) {
     return 4 + len; 
 }
 string CommentNifString( NifString &s ) { 
+    if (s.len == 0) return "";
     return SubStr(s.str, 0, s.len); 
 }
 
@@ -114,16 +116,30 @@ typedef int Ref;
 typedef int Ptr;
 
 /*! Stores 2D texture coordinates as two floating point variables, u and v. */
-struct TexCoord {
+typedef struct  {
 	float u; /*!< The U value in this coordinate pair. */ 
 	float v; /*!< The V value in this coordinate pair. */ 
-};
+} TexCoord <name="TexCoord">;
 
-struct Vector3 {
+string CommentTexCoord(TexCoord &t) {
+    local char buffer[32];
+    SPrintf(buffer, "%6.2f,%6.2f", t.u, t.v);
+    return buffer;
+}
+
+
+typedef struct  {
 	float x; /*!< The X component of this vector. */ 
 	float y; /*!< The Y component of this vector. */ 
 	float z; /*!< The Z component of this vector. */ 
-};
+} Vector3 <name="Vector3", comment=CommentVector3>;
+
+string CommentVector3(Vector3 &v) {
+    local char buffer[32];
+    SPrintf(buffer, "%6.2f,%6.2f,%6.2f", v.x, v.y, v.z);
+    return buffer;
+}
+
 
 typedef struct {
 	unsigned short v1; /*!< The index of the first vertex. */ 
@@ -138,26 +154,40 @@ string CommentTriangle(Triangle &tri) {
 }
 
 /*! Stores a color along with alpha translucency */
-struct Color3 {
+typedef struct {
 	float r; /*!< The red component of this color.  Should be between 0.0f and 1.0f. */ 
 	float g; /*!< The green component of this color.  Should be between 0.0f and 1.0f. */ 
 	float b; /*!< The blue component of this color.  Should be between 0.0f and 1.0f. */ 
-};
+} Color3 <name="Color3", comment=CommentColor3>;
+
+string CommentColor3(Color3 &c) {
+    local char buffer[32];
+    SPrintf(buffer, "%6.3f,%6.3f,%6.3f", c.r, c.g, c.b);
+    return buffer;
+}
 
 /*!Represents a position or direction in 3D space*/
-struct Vector4 {
+typedef struct {
 	float x; /*!< The X component of this vector. */ 
 	float y; /*!< The Y component of this vector. */ 
 	float z; /*!< The Z component of this vector. */ 
 	float w; /*!< The W component of this vector. */ 
-};
+} Vector4 <name="Vector4", comment=CommentVector4>;
 
-struct Float2 {
+string CommentVector4(Vector3 &v) {
+    local char buffer[32];
+    SPrintf(buffer, "%6.2f,%6.2f,%6.2f,%6.2f", v.x, v.y, v.z, v.w);
+    return buffer;
+}
+
+
+typedef struct  {
 	float data[2]; /*!< The two floating point numbers stored as an array. */ 
-};
-struct Matrix22 {
+} Float2 <name="Float2">;
+
+typedef struct {
 	Float2 rows[2];  /*!< The two rows of Float2 structures which hold two floating point numbers each. */ 
-};
+} Matrix22 <name="Matrix22">;
 
 /* Stores three floating point numbers.  Used as a row of a Matrix33 and to store the data in attr_vector3 and attr_color3 type attributes. */
 struct Float3 {
