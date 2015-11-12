@@ -111,6 +111,7 @@ struct Char8String {
 
 //struct Ref {     int value; };
 typedef int Ref;
+typedef int Ptr;
 
 /*! Stores 2D texture coordinates as two floating point variables, u and v. */
 struct TexCoord {
@@ -129,11 +130,19 @@ typedef struct {
 	unsigned short v2; /*!< The index of the second vertex. */ 
 	unsigned short v3; /*!< The index of the third vertex. */ 
 } Triangle <comment=CommentTriangle>;
+
 string CommentTriangle(Triangle &tri) {
     local char buffer[32];
     SPrintf(buffer, "%4d,%4d,%4d", tri.v1, tri.v2, tri.v3);
     return buffer;
 }
+
+/*! Stores a color along with alpha translucency */
+struct Color3 {
+	float r; /*!< The red component of this color.  Should be between 0.0f and 1.0f. */ 
+	float g; /*!< The green component of this color.  Should be between 0.0f and 1.0f. */ 
+	float b; /*!< The blue component of this color.  Should be between 0.0f and 1.0f. */ 
+};
 
 /*!Represents a position or direction in 3D space*/
 struct Vector4 {

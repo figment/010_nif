@@ -17,13 +17,6 @@ typedef unsigned char	bool;
 
 typedef struct {
 
-//	if ( (info_userVersion >= 12) ) {
-//		if ( IsDerivedType(BSLightingShaderProperty::TYPE) ) {
-//	        /* Configures the main shader path */
-//	        BSLightingShaderPropertyShaderType skyrimShaderType;
-//		};
-//	};
-
 	/*! Name of this controllable object, used to refer to the object in .kf files. */
 	IndexString name;
 	if ( info_version <= 0x02030000 ) {
@@ -61,6 +54,9 @@ string CommentNiObject(NiObject& obj) {
         return CommentNifString(header.strings[obj.name.value]);
     return "";
 }
+
+typedef NiObject NiObjectNET;
+typedef NiObjectNET NiProperty;
 
 typedef struct {
     NiObject base;
@@ -195,3 +191,28 @@ typedef struct {
     } SkinPartitionBlocks[numPartitions]<optimize=false>;
 } NiSkinPartition;
  
+
+typedef struct {
+    NiObject base;
+
+	/*! Skinning data reference. */
+	Ref data;
+
+    if ( info_version >= 0x0A020000 ) {
+        /*!
+         * Refers to a NiSkinPartition objects, which partitions the mesh such that every
+         * vertex is only influenced by a limited number of bones.
+         */
+        Ref skinPartition;
+    }    
+	/*! Armature root node. */
+	Ptr skeletonRoot;
+    
+	/*! The number of node bones referenced as influences. */
+	unsigned int numBones;
+	/*! List of all armature bones. */
+    if (numBones > 0)
+	    Ref bones[numBones];
+
+} NiSkinInstance;
+

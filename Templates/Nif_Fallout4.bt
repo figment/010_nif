@@ -23,7 +23,7 @@ LittleEndian();
 typedef unsigned char	byte;
 typedef unsigned char	bool;
 
-struct BSSubIndexTriShape {
+typedef struct {
     NiAVObject base;
     int unknown[4];
     Ref Skin;
@@ -41,10 +41,10 @@ struct BSSubIndexTriShape {
         hfloat x;
         hfloat y;
         hfloat z;
-        ushort unk <format=hex>;
+        hfloat unk ;
         hfloat ux;
         hfloat uy;
-        ushort unk <format=hex>;
+        hfloat unk;
         ushort unk <format=hex>;
         hfloat point;
         hfloat point;
@@ -71,7 +71,13 @@ struct BSSubIndexTriShape {
     };
     if (numUnk > 0)
         UnknownStruct unknowns[numUnk] <optimize=false>;
-};
+} BSSubIndexTriShape <name="BSSubIndexTriShape">;
+
+typedef struct  {
+} BSSkin_Instance <name="BSSkin::Instance">;
+
+typedef struct  {
+} BSSkin_BoneData <name="BSSkin::BoneData">;
 
 //info_version = 0x14020007;
 //info_userVersion = 12;
@@ -79,23 +85,49 @@ struct BSSubIndexTriShape {
 
 void LoadBlocks(int64 blockStart, Header& header) {
     local int block_idx, typeIdx;
-    local int64 blockPos, blockSize;
+    local int64 blockPos, blockSize, blockEnd;
     local string blockType;
+    local int skip_check, wrote_header;
+    local int diff, curPos;
 
-
+    wrote_header = 0;
     blockPos = blockStart;
     for (block_idx=0; block_idx<header.numBlocks; ++block_idx) {
         FSeek(blockPos);
         typeIdx = header.blockTypeIndex[block_idx];
         blockSize = header.blockSize[block_idx];
         blockType = ReadNifString(header.blockTypes[typeIdx]);
+        blockEnd = blockPos + blockSize;
 
-        if (Strcmp(blockType, "NiNode") == 0)
-            NiNode node;
+//        if (Strcmp(blockType, "NiNode") == 0)
+//            NiNode node;
+        skip_check = 0;
         if (Strcmp(blockType, "BSSubIndexTriShape") == 0)
             BSSubIndexTriShape shape;
+        else if (Strcmp(blockType, "BSSkin::Instance") == 0)
+            BSSkin_Instance skin;
+        else if (Strcmp(blockType, "BSSkin::BoneData") == 0)
+            BSSkin_BoneData data;
+        else if (Strcmp(blockType, "BSLightingShaderProperty") == 0)
+            BSLightingShaderProperty property;
+        else
+            skip_check = 1;
 
-        blockPos += blockSize;
+
+        if (!skip_check) {
+            curPos = FTell();
+            diff = blockEnd - curPos;
+            if ( diff != 0 ) {
+                if (wrote_header == 0) {
+                    Printf("\nErrors:\n");
+                    wrote_header = 1;
+                }
+                Printf("%4d | %-50s | %5d | %5d != %5d | %5d\n",
+                 block_idx, blockType, blockPos, blockEnd, curPos, diff);
+            }
+        }
+
+        blockPos = blockEnd;
     }
 }
 
