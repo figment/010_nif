@@ -1,0 +1,30 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+// Define the headers
+LittleEndian(); 
+
+typedef unsigned char	byte;
+
+typedef struct {
+    int dataRef;
+    int skinPartition;
+    int skeletonRoot;
+    uint numBones;
+    uint bonePtrs[numBones];
+    int numPartitions;
+    struct Partition {
+        ushort flags;
+        ushort id;
+    } partitions[numPartitions];
+ 
+} BSDismemberSkin;
+ 

@@ -15,6 +15,7 @@ LittleEndian();
 #include "nif/enums.bt"
 #include "nif/basic.bt"
 #include "nif/objects.bt"
+#include "nif/bsobjects.bt"
 
 typedef struct {
     if ( info_version <= 0x0A000102 )

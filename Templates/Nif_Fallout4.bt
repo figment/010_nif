@@ -33,19 +33,22 @@ struct BSSubIndexTriShape {
     int numVertices10 <format=hex,comment="0x10 larger than vert size">;
     int numTris;
     ushort numVerts;
-    int unknown;
-    struct Vert {
+    byte flags01;
+    byte flags02;           // 9C
+    byte flags03;
+    byte flags04;
+    typedef struct  {
+        hfloat x;
+        hfloat y;
+        hfloat z;
+        ushort unk <format=hex>;
+        hfloat ux;
+        hfloat uy;
+        ushort unk <format=hex>;
+        ushort unk <format=hex>;
         hfloat point;
         hfloat point;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        hfloat point;
+        hfloat notable;
         hfloat point;
         hfloat point;
         hfloat point;
@@ -54,7 +57,8 @@ struct BSSubIndexTriShape {
         byte unknown <format=hex>;
         byte unknown <format=hex>;
         // ushort unknown;
-    } verts[numVerts];
+    } VERTDATA <name="Vertices">;
+    struct VERTDATA verts[numVerts];
     Triangle tris[numTris];
     int numTris;
     int numUnk;

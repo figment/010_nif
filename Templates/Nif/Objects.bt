@@ -139,3 +139,59 @@ typedef struct  {
 string CommentNiNode(NiNode& obj) {
     return CommentNiAVObject(obj.base);
 }
+
+
+typedef struct {
+    Vector3 Rotation[3];
+    Vector3 Translation;
+    float scale;
+    uint numBones;
+    byte hasVertWeights;
+    struct boneWeights {
+        Vector3 rot[3];
+        Vector3 trans;
+        float scl;
+        Vector3 bsphere;
+        float bsrad;
+        ushort numVerts;
+        struct skinweight {
+            ushort index;
+            float weight;
+        } vertexWeights[numVerts];
+    } bones[numBones]<optimize=false>;
+   
+} NiSkinData;
+ 
+typedef struct {  
+    uint numPartitions;
+    struct SkinPartition {
+        ushort numVerts;
+        ushort numTris;
+        ushort numBones;
+        ushort numStrips;
+        ushort numWeightPerVert;
+        ushort bones[numBones];
+        byte hasVertexMap;
+        ushort vertMap[numVerts];
+        byte hasVertexWeights;
+        struct VertWeight {
+            float vw[numWeightPerVert];
+        } vertWeights[numVerts];
+        ushort stripLengths[numStrips];
+        byte hasFaces;
+        if(numStrips != 0) {
+            local int i;
+            for(i=0;i<numStrips;i++) {  
+                ushort Strip[stripLengths[i]];
+            }
+        } else {
+            Triangle tris[numTris];
+        }
+        byte hasBoneIndices;
+        struct BoneIndex {
+            byte bi[numWeightPerVert];
+        } boneIndices[numVerts];
+        ushort unk;
+    } SkinPartitionBlocks[numPartitions]<optimize=false>;
+} NiSkinPartition;
+ 

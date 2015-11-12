@@ -184,6 +184,16 @@ struct Quaternion {
 	float z; /*!< The Z vector component of this Quaternion. */ 
 };
 
+struct QTransform {
+	/*! Translation. */
+	Vector3 translation;
+	/*! Rotation. */
+	Quaternion rotation;
+	/*! Scale. */
+	float scale;
+};
+
+
 /*! Stores a 4 by 3 matrix used for tensors. */
 struct InertiaMatrix {
 	Float4 rows[3]; /*!< The three rows of Float3 structures which hold three floating point numbers each. */ 
@@ -200,3 +210,84 @@ struct BoundingBox {
 	/*! Radius, per direction. */
 	Vector3 radius;
 };
+
+
+
+typedef struct {
+    int nameID;
+    uint numControlled;
+    uint unk1;
+    struct CONTROLLERLINK {
+        int interpolatorRef;
+        int controllerRef;
+        byte priority;
+        int nodeName;
+        int propType;
+        int contType;
+        int var1;
+        int var2;        
+    } controlledBlocks [numControlled];
+    float weight;
+    int textkeysRef;
+    uint cycleType;
+    float freq;
+    float startTime;
+    float stopTime;
+    int managerPtr;
+    int targetName;
+    short unkshort1;
+   
+} NiControllerSequence;
+ 
+typedef struct {
+    int nameId;
+    uint numTextKeys;
+    struct TEXTKEY {
+        float Time;
+        int valueId;
+    } TextKeys[numTextKeys]<optimize=false>;
+} NiTextKeyExtraData;
+ 
+typedef struct {
+    Vector3 translation;
+    Quaternion rotation;
+    float scale;
+    int interpDataRef;
+} NiTransformInterpolator;
+ 
+typedef struct {
+    uint numRotKeys;
+    if(numRotKeys > 0) {
+        uint rotType;
+        if(rotType != 4) {
+            struct QUATKEY {
+                float time;
+                Quaternion quat;
+            } quatKeys [numRotKeys];
+        } else {
+            float unkfloat;
+            uint numXyzKeys;
+            struct XYZROTKEY {
+                float time;
+                float value;        
+            } xyzRotations [numXyzKeys];
+        }
+    }
+    uint numTransKeys;
+    if(numTransKeys !=0 ) {
+        uint transInterpType;
+    }
+    struct TRANSKEY {
+        float time;
+        Vector3 value;
+    } translations [numTransKeys];
+    uint numScaleKeys;
+    if(numScaleKeys !=0) {
+        uint scaleInterpType;
+    }
+    struct SCALEKEY{
+        float time;
+        float value;
+    } scales [numScaleKeys];
+ 
+} NiTransformData;
