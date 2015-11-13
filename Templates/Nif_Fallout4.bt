@@ -26,13 +26,10 @@ typedef struct {
     hfloat x;
     hfloat y;
     hfloat z;
-    hfloat unk ;
+    hfloat unk1 <comment="Possible Face Weight (or vert/uv dot product)">;
     hfloat ux;
     hfloat uy;
-    hfloat unk;
-    hfloat unk;
-    hfloat point;
-    hfloat point;
+    char unk[8];
     if (flag1 == 6) // from parent
         int vertColors <comment="Vertex Colors?">; 
 
@@ -53,13 +50,13 @@ typedef struct {
     NiAVObject base;
     float unknown[4];
     Ref Skin;
-    Ref unk;
-    Ref unk;
+    Ref ShaderProperty;
+    Ref AlphaProperty;
     byte flag1 <comment="Vertex Data Type">;
     byte flag2 <format=hex,comment="2">;
     byte flag3 <format=hex,comment="43h">;
     byte flag4 <format=hex>;
-    int numVertices10 <format=hex,comment="0x10 larger than vert size">;
+    int unknown <format=hex>;
     int numTris;
     ushort numVerts;
     int triVertBlockSize;
@@ -165,7 +162,8 @@ void LoadBlocks(int64 blockStart, Header& header) {
             bhkPhysicsSystem physics;
         else if (Strcmp(blockType, "BSTriShape") == 0)
             BSTriShape shape;
-        
+        else if (Strcmp(blockType, "NiAlphaProperty") == 0)
+            NiAlphaProperty prop;        
 
         else {
             WRITE_HEADER;

@@ -95,7 +95,7 @@ typedef struct {
     }
 	unsigned int unknownInt2;
 
-} Header;
+} Header <name="Header">;
 
 // Define the headers
 LittleEndian(); 
