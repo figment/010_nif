@@ -22,7 +22,7 @@ LittleEndian();
 
 typedef unsigned char	byte;
 
-typedef struct  {
+typedef struct {
     hfloat x;
     hfloat y;
     hfloat z;
@@ -30,48 +30,39 @@ typedef struct  {
     hfloat ux;
     hfloat uy;
     hfloat unk;
-    ushort unk <format=hex>;
+    hfloat unk;
     hfloat point;
     hfloat point;
-    int unk;
-} VERTDATA <name="Vertices">;
+    if (flag1 == 6) // from parent
+        int vertColors <comment="Vertex Colors?">; 
 
-typedef struct  {
-    hfloat x;
-    hfloat y;
-    hfloat z;
-    hfloat unk ;
-    hfloat ux;
-    hfloat uy;
-    hfloat unk;
-    ushort unk <format=hex>;
-    hfloat point;
-    hfloat point;
-    hfloat notable;
-    hfloat point;
-    hfloat point;
-    hfloat point;
-    byte unknown <format=hex>;
-    byte unknown <format=hex>;
-    byte unknown <format=hex>;
-    byte unknown <format=hex>;
-    // ushort unknown;
-} VERTDATA2 <name="Vertices">;
+    // in uniformF_Nopack these are all same for first 57 verts
+    if (flag1 == 8) {
+        hfloat notable;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+    }
+} VERTDATA <name="Vertices">;
 
 typedef struct {
     NiAVObject base;
-    int unknown[4];
+    float unknown[4];
     Ref Skin;
     Ref unk;
     Ref unk;
-    int unknown <format=hex>;
+    byte flag1 <comment="Vertex Data Type">;
+    byte flag2 <format=hex,comment="2">;
+    byte flag3 <format=hex,comment="43h">;
+    byte flag4 <format=hex>;
     int numVertices10 <format=hex,comment="0x10 larger than vert size">;
     int numTris;
     ushort numVerts;
-    byte flags01;
-    byte flags02;           // 9C
-    byte flags03;
-    byte flags04;
+    int triVertBlockSize;
     VERTDATA verts[numVerts];
     Triangle tris[numTris];
 } BSTriShape <name="BSTriShape">;
@@ -80,17 +71,17 @@ typedef struct {
     NiAVObject base;
     int unknown[4];
     Ref Skin;
+    Ref ShaderProperty <comment="<Shader>">;
     Ref unk;
-    Ref unk;
-    int unknown <format=hex>;
+    byte flag1 <comment="Vertex Data Type">;
+    byte flag2 <format=hex,comment="2">;
+    byte flag3 <format=hex,comment="43h">;
+    byte flag4  <format=hex,comment="0 mostly, 50 sometimes">;
     int numVertices10 <format=hex,comment="0x10 larger than vert size">;
     int numTris;
     ushort numVerts;
-    byte flags01;
-    byte flags02;           // 9C
-    byte flags03;
-    byte flags04;
-    VERTDATA2 verts[numVerts];
+    int triVertBlockSize;
+    VERTDATA verts[numVerts];
     Triangle tris[numTris];
     int numTris;
     int numUnk;

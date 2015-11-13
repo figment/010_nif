@@ -60,7 +60,7 @@ typedef struct {
 	float emissiveMultiple;
 
     if (isFallout4)
-        int forty_two <comment="New: Fallout 4">;
+        Ref wetMaterialNameId <comment="New: Fallout 4">;
 
 	/*! How to handle texture borders. */
 	TexClampMode textureClampMode;
@@ -133,7 +133,7 @@ typedef struct {
 	    /*! Offset to set center for right eye cubemap */
 	    Vector3 rightEyeReflectionCenter;
 	}
-
+   
 
 } BSLightingShaderProperty <name="BSLightingShaderProperty">;
 
