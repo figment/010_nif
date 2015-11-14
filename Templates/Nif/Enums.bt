@@ -892,7 +892,7 @@ typedef enum <unsigned int> {
 	SLSF1_EXTERNAL_EMITTANCE = 536870912, /*!< SLSF1_External_Emittance */
 	SLSF1_SOFT_EFFECT = 1073741824, /*!< SLSF1_Soft_Effect */
 	SLSF1_ZBUFFER_TEST = 2147483648, /*!< ZBuffer Test (1=on) */
-} SkyrimShaderPropertyFlags1 <name="SkyrimShaderPropertyFlags1",comment="Skyrim Shader Property Flags 1">;
+} SkyrimShaderPropertyFlags1 <name="SkyrimShaderPropertyFlags1",comment=CommentSkyrimShaderPropertyFlags1>;
 
 typedef enum <unsigned int> {
 	SF_SPECULAR = 1, /*!< Enables Specularity */
@@ -985,9 +985,104 @@ typedef enum <unsigned int> {
 	SLSF2_TREE_ANIM = 536870912, /*!< Enables Vertex Animation, Flutter Animation */
 	SLSF2_EFFECT_LIGHTING = 1073741824, /*!< SLSF2_Effect_Lighting */
 	SLSF2_HD_LOD_OBJECTS = 2147483648, /*!< SLSF2_HD_LOD_Objects */
-} SkyrimShaderPropertyFlags2 <name="SkyrimShaderPropertyFlags2",comment="Skyrim Shader Property Flags 2">;
+} SkyrimShaderPropertyFlags2 <name="SkyrimShaderPropertyFlags2",comment=CommentSkyrimShaderPropertyFlags2>;
 
 typedef enum <unsigned int> {
 	BSSEG_WATER = 512, /*!< Contains water. */
 } BSSegmentFlags <name="BSSegmentFlags",comment="An unsigned 32-bit integer, describing what's inside the segment.">;
+
+string CommentSkyrimShaderPropertyFlags1(SkyrimShaderPropertyFlags1& flags)
+{
+    local char buffer[];
+    local int i, first = 1;
+    for (i=0;i<32;++i) {
+        if ((flags & 1<<i) != 0) {
+            if (!first) Strcat(buffer, "|");
+            switch (i) {
+            case  0: Strcat(buffer, "Specular"); break;
+            case  1: Strcat(buffer, "Skinned"); break;
+            case  2: Strcat(buffer, "Temp_Refraction"); break;
+            case  3: Strcat(buffer, "Vertex_Alpha"); break;
+            case  4: Strcat(buffer, "GS_To_PalColor"); break;
+            case  5: Strcat(buffer, "GS_To_PalAlpha"); break;
+            case  6: Strcat(buffer, "Use_Falloff"); break;
+            case  7: Strcat(buffer, "Environment_Mapping"); break;
+            case  8: Strcat(buffer, "Recieve_Shadows"); break;
+            case  9: Strcat(buffer, "Cast_Shadows"); break;
+            case 10: Strcat(buffer, "Facegen_Detail_Map"); break;
+            case 11: Strcat(buffer, "Parallax"); break;
+            case 12: Strcat(buffer, "Model_Space_Normals"); break;
+            case 13: Strcat(buffer, "Non_Projective_Shadows"); break;
+            case 14: Strcat(buffer, "Landscape"); break;
+            case 15: Strcat(buffer, "Refraction"); break;
+            case 16: Strcat(buffer, "Fire_Refraction"); break;
+            case 17: Strcat(buffer, "Eye_Environment_Mapping"); break;
+            case 18: Strcat(buffer, "Hair_Soft_Lighting"); break;
+            case 19: Strcat(buffer, "Screendoor_Alpha_Fade"); break;
+            case 20: Strcat(buffer, "Localmap_Hide_Secret"); break;
+            case 21: Strcat(buffer, "FaceGen_RGB_Tint"); break;
+            case 22: Strcat(buffer, "Own_Emit"); break;
+            case 23: Strcat(buffer, "Projected_UV"); break;
+            case 24: Strcat(buffer, "Multiple_Textures"); break;
+            case 25: Strcat(buffer, "Remappable_Textures"); break;
+            case 26: Strcat(buffer, "Decal"); break;
+            case 27: Strcat(buffer, "Dynamic_Decal"); break;
+            case 28: Strcat(buffer, "Parallax_Occlusion"); break;
+            case 29: Strcat(buffer, "External_Emittance"); break;
+            case 30: Strcat(buffer, "Soft_Effect"); break;
+            case 31: Strcat(buffer, "ZBuffer_Test"); break;
+            }
+            first = 0;
+        }    
+    }
+    return buffer;
+}
+
+            
+string CommentSkyrimShaderPropertyFlags2(SkyrimShaderPropertyFlags2& flags)
+{
+    local char buffer[];
+    local int i, first = 1;
+    for (i=0;i<32;++i) {
+        if ((flags & 1<<i) != 0) {
+            if (!first) Strcat(buffer, "|");
+            switch (i) {
+            case  0: Strcat(buffer, "ZBuffer_Write"); break;
+            case  1: Strcat(buffer, "LOD_Landscape"); break;
+            case  2: Strcat(buffer, "LOD_Objects"); break;
+            case  3: Strcat(buffer, "No_Fade"); break;
+            case  4: Strcat(buffer, "Double_Sided"); break;
+            case  5: Strcat(buffer, "Vertex_Colors"); break;
+            case  6: Strcat(buffer, "Glow_Map"); break;
+            case  7: Strcat(buffer, "Assume_Shadowmask"); break;
+            case  8: Strcat(buffer, "Packed_Tangent"); break;
+            case  9: Strcat(buffer, "Multi_Index_Snow"); break;
+            case 10: Strcat(buffer, "Vertex_Lighting"); break;
+            case 11: Strcat(buffer, "Uniform_Scale"); break;
+            case 12: Strcat(buffer, "Fit_Slope"); break;
+            case 13: Strcat(buffer, "Billboard"); break;
+            case 14: Strcat(buffer, "No_LOD_Land_Blend"); break;
+            case 15: Strcat(buffer, "EnvMap_Light_Fade"); break;
+            case 16: Strcat(buffer, "Wireframe"); break;
+            case 17: Strcat(buffer, "Weapon_Blood"); break;
+            case 18: Strcat(buffer, "Hide_On_Local_Map"); break;
+            case 19: Strcat(buffer, "Premult_Alpha"); break;
+            case 20: Strcat(buffer, "Cloud_LOD"); break;
+            case 21: Strcat(buffer, "Anisotropic_Lighting"); break;
+            case 22: Strcat(buffer, "No_Transparency_Multisampling"); break;
+            case 23: Strcat(buffer, "Unused01"); break;
+            case 24: Strcat(buffer, "Multi_Layer_Parallax"); break;
+            case 25: Strcat(buffer, "Soft_Lighting"); break;
+            case 26: Strcat(buffer, "Rim_Lighting"); break;
+            case 27: Strcat(buffer, "Back_Lighting"); break;
+            case 28: Strcat(buffer, "Unused02"); break;
+            case 29: Strcat(buffer, "Tree_Anim"); break;
+            case 30: Strcat(buffer, "Effect_Lighting"); break;
+            case 31: Strcat(buffer, "HD_LOD_Objects"); break;
+            }
+            first = 0;
+        }    
+    }
+    return buffer;
+}
 

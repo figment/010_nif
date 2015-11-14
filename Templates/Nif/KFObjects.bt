@@ -108,8 +108,8 @@ typedef struct (KeyType type) {
 	float time; /*!< The time on the animation timeline that this keyframe takes affect. */ 
 	Vector3 data; /*!< The data being keyed to the timeline. */ 
     if ( type == QUADRATIC_KEY ) {
-//	    Vector3 forward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the forward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
-//        Vector3 backward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the backward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+	    Vector3 forward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the forward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+        Vector3 backward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the backward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
     } else if ( type == TBC_KEY ) {
 	    float tension; /*!< The amount of tension to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
 	    float bias; /*!< The amount of bias to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
@@ -150,7 +150,7 @@ typedef struct  {
 	    /*! The keys. */
 	    KeyVector3 keys(interpolation)[numKeys]<optimize=false>;
     }
-} PosKeyGroupVector3;
+} PosKeyGroupVector3 <name="PosKeyGroup<Vector3>">;
 
 typedef struct {
 
@@ -185,9 +185,9 @@ typedef struct {
 	/*! Scale keys. */
 	KeyGroupFloat scales;
 
-} NiKeyframeData <comment="NiKeyframeData">;
+} NiKeyframeData <name="NiKeyframeData">;
 
-typedef NiKeyframeData NiTransformData <comment="NiTransformData">;
+typedef NiKeyframeData NiTransformData <name="NiTransformData">;
 
 
 typedef struct {

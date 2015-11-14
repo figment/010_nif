@@ -204,9 +204,9 @@ typedef struct {
     NiProperty base;
     
 	/*! Unknown. */
-	SkyrimShaderPropertyFlags1 shaderFlags1;
+	SkyrimShaderPropertyFlags1 shaderFlags1 <name="flags1",format=hex>;
 	/*! Unknown. */
-	SkyrimShaderPropertyFlags2 shaderFlags2;
+	SkyrimShaderPropertyFlags2 shaderFlags2 <name="flags2",format=hex>;
 	/*! Offset UVs */
 	TexCoord uvOffset;
 	/*! Offset UV Scale to repeat tiling textures */
@@ -214,7 +214,8 @@ typedef struct {
 	/*! points to an external texture. */
 	NiString sourceTexture;
 	/*! How to handle texture borders. */
-	unsigned int textureClampMode;
+	TexClampMode textureClampMode : 4;
+	unsigned int textureClampMode : 28;
     if(!isFallout4) {
 	    /*! At this cosine of angle falloff will be equal to Falloff Start Opacity */
 	    float falloffStartAngle;
@@ -251,3 +252,35 @@ typedef struct {
 typedef struct {
     NiAlphaController base;
 } BSNiAlphaPropertyTestRefController <name="BSNiAlphaPropertyTestRefController">;
+
+
+
+/*! Stores Bone Level of Detail info in a BSBoneLODExtraData */
+struct BoneLOD {
+	/*! Distance to cull? */
+	unsigned int distance;
+	/*! The bones name */
+	IndexString boneName;
+};
+
+typedef struct {
+    NiExtraData base;
+
+	/*! Number of bone entries */
+	unsigned int bonelodCount;
+
+    if (bonelodCount > 0) {
+	    /*! Bone Entry */
+	    BoneLOD bonelodInfo[bonelodCount];
+    }
+
+} BSBoneLODExtraData <name="BSBoneLODExtraData">;
+
+typedef struct {
+    NiExtraData base;
+	/*! Center of the bounding box. */
+	Vector3 center;
+	/*! Dimensions of the bounding box from center. */
+	Vector3 dimensions;
+
+} BSBound <name="BSBound">;

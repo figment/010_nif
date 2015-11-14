@@ -214,7 +214,7 @@ typedef struct {
     if (numBones > 0)
 	    Ref bones[numBones];
 
-} NiSkinInstance;
+} NiSkinInstance <name="NiSkinInstance">;
 
 
 
@@ -306,7 +306,7 @@ typedef struct {
 	/*! Object reference. */
 	Ptr avObject<comment="NiAVObject *">;
 
-} AVObject;
+} AVObject <name="AVObject">;
 
 typedef struct {
 

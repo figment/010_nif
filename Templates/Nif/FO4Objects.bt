@@ -59,6 +59,14 @@ typedef struct {
     float unk;
 } BSConnectPoint_Parents <name="BSConnectPoint::Parents">;
 
+typedef struct {
+    IndexString name;
+    byte unk;
+    int unk;
+    NiString target;
+} BSConnectPoint_Children <name="BSConnectPoint::Children">;
+
+
 
 typedef struct {
     int blobSize;
@@ -66,3 +74,7 @@ typedef struct {
 } bhkPhysicsSystem <name="bhkPhysicsSystem">;
 
 
+typedef struct {
+    int blobSize;
+    char blob[blobSize] <format=hex>;
+} bhkRagdollSystem <name="bhkRagdollSystem">;

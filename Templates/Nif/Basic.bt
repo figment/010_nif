@@ -14,7 +14,7 @@ LittleEndian();
 
 typedef unsigned char	byte;
 
-typedef struct { string s; } HeaderString <read=ReadHeaderString,size=SizeHeaderString>;
+typedef struct { string s; } HeaderString <name="string",read=ReadHeaderString,size=SizeHeaderString>;
 
 string ReadHeaderString( HeaderString &s )
 {
@@ -37,7 +37,7 @@ int SizeHeaderString(HeaderString &s) {
 typedef struct {
     uchar len;
 	string str;
-}  ShortString <read=ReadShortString,size=SizeShortString>;
+}  ShortString <name="string",read=ReadShortString,size=SizeShortString>;
 
 string ReadShortString( ShortString &s ) { 
     local uchar len = ReadUByte();
@@ -70,7 +70,7 @@ string CommentNiString ( NiString  &s ) {
 
 typedef struct {
 	string line;
-}  LineString <read=ReadLineString,size=SizeLineString>;
+}  LineString <name="string", read=ReadLineString,size=SizeLineString>;
 
 string ReadLineString( LineString &s )
 {

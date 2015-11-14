@@ -116,6 +116,10 @@ typedef struct {
 } bhkNPCollisionObject <name="bhkNPCollisionObject">;
 
 
+
+
+
+
 local bool isFallout4 = false;
 if (info_userVersion == 12 && info_userVersion2 == 130)
     isFallout4 = true;
@@ -128,7 +132,7 @@ void LoadBlocks(int64 blockStart, Header& header) {
     local int diff, curPos;
 
 #define WRITE_HEADER if (wrote_header == 0) { \
-                Printf("\nErrors:\n"); \
+                Warning("\nErrors:\n"); \
                 wrote_header = 1; }
 
     wrote_header = 0;
@@ -149,10 +153,12 @@ void LoadBlocks(int64 blockStart, Header& header) {
         else if (blockType == "BSXFlags")                          BSXFlags                         block;
         else if (blockType == "bhkNPCollisionObject")              bhkNPCollisionObject             block;
         else if (blockType == "bhkPhysicsSystem")                  bhkPhysicsSystem                 block;
+        else if (blockType == "bhkRagdollSystem")                  bhkRagdollSystem                 block;
         else if (blockType == "BSTriShape")                        BSTriShape                       block;
         else if (blockType == "NiAlphaProperty")                   NiAlphaProperty                  block;        
         else if (blockType == "NiTransformController")             NiTransformController            block;        
         else if (blockType == "BSConnectPoint::Parents")           BSConnectPoint_Parents           block;
+        else if (blockType == "BSConnectPoint::Children")          BSConnectPoint_Children          block;
         else if (blockType == "NiTransformInterpolator")           NiTransformInterpolator          block;
         else if (blockType == "NiTransformData")                   NiTransformData                  block;
         else if (blockType == "NiControllerManager")               NiControllerManager              block;
@@ -176,10 +182,13 @@ void LoadBlocks(int64 blockStart, Header& header) {
         else if (blockType == "BSEffectShaderProperty")            BSEffectShaderProperty           block; 
         else if (blockType == "BSNiAlphaPropertyTestRefController") BSNiAlphaPropertyTestRefController block; 
         else if (blockType == "NiAlphaController")                 NiAlphaController                block; 
+        else if (blockType == "BSBoneLODExtraData")                BSBoneLODExtraData               block; 
+        else if (blockType == "BSBound")                           BSBound                          block; 
+ 
 
         else {
             WRITE_HEADER;
-            Printf("%4d | %-50s | Missing\n", block_idx, blockType);
+            Warning("%4d | %-50s | Missing\n", block_idx, blockType);
             skip_check = 1;
         }
 
@@ -191,7 +200,7 @@ void LoadBlocks(int64 blockStart, Header& header) {
             diff = blockEnd - curPos;
             if ( diff != 0 ) {
                 WRITE_HEADER;
-                Printf("%4d | %-50s | %5d | %5d != %5d | %5d\n",
+                Warning("%4d | %-50s | %5d | %5d != %5d | %5d\n",
                  block_idx, blockType, blockPos, blockEnd, curPos, diff);
                 SetForeColor(cRed);
 
