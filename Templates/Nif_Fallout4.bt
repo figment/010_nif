@@ -81,7 +81,7 @@ typedef struct {
     int numTris;
     ushort numVerts;
     int triVertBlockSize;
-    VERTDATA verts[numVerts]<optimize=false>;
+    VERTDATA verts[numVerts];
     Triangle tris[numTris];
 } BSTriShape <name="BSTriShape">;
 
@@ -89,44 +89,53 @@ typedef struct {
     BSTriShape base <open=true>;
     int numTris;
 
-
-    struct Temp1
-    {
-        int unknown;
-        int unknown;
-        int unknown;
-        int numStuff;
-        typedef struct {
-            int unknown;
-            int unknown;
-            int unknown;
-            int unknown;
-        } UnknownStuff; 
-        if (numStuff > 0)
-            UnknownStuff stuff[numStuff]<optimize=false>;
-    } ;
-    
-    struct Temp2
-    {
-        int index;
-        hfloat unk;
-        hfloat unk;
-        int numUnks;
-        if (numUnks > 0)
-            float unk2[numUnks];
-    } ;
     struct MysteryData
     {
-        int num1;
-        int num2;
-        Temp1 unk1[num1]<optimize=false>;
-        int num1;
-        int num2;
-        int unk2[num1];
-        Temp2 unk3[num2]<optimize=false>;
+        struct Temp1
+        {
+            int unknown;
+            int unknown;
+            int unknown;
+            int numStuff;
+            typedef struct {
+                int unknown;
+                int unknown;
+                int unknown;
+                int unknown;
+            } UnknownStuff; 
+            if (numStuff > 0)
+                UnknownStuff stuff[numStuff]<optimize=false>;
+        } ;
+        
+        struct Temp2
+        {
+            int index;
+            hfloat unk;
+            hfloat unk;
+            int numUnks;
+            if (numUnks > 0)
+                float unk2[numUnks];
+        } ;
+
+        int size1;
+        int size2;
+        Temp1 unk1[size1]<optimize=false>;
+
+        //// The evil check.  Basically if numStuff is non zero then the section below exists
+        //local bool second_stuff_flag = false;
+        //local int i;
+        //for (i=0;i<size;++i)
+        //    second_stuff_flag |= (unk1[i].numStuff>0);
+        if (size2 > size1)
+        {
+            int num1 <comment="Sizes again?">;
+            int num2 <comment="Sizes again?">;
+            int unk2[num1];
+            Temp2 unk3[num2]<optimize=false>;
+            LongString ssf;
+        }
     };
-    MysteryData stuff;
-    LongString ssf;
+    MysteryData stuff <open=true>;
 
 } BSSubIndexTriShape <name="BSSubIndexTriShape">;
 
