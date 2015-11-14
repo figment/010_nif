@@ -34,7 +34,7 @@ typedef struct {
         int vertColors <comment="Vertex Colors?">; 
 
     // in uniformF_Nopack these are all same for first 57 verts
-    if (flag1 == 8) {
+    if (flag1 >= 8) {
         hfloat notable;
         hfloat point;
         hfloat point;
@@ -44,14 +44,17 @@ typedef struct {
         byte unknown <format=hex>;
         byte unknown <format=hex>;
     }
+    if (flag1 == 9) { // FemaleEyesAO.nif
+        int unk; 
+    }
 } VERTDATA <name="Vertices">;
+
 
 typedef struct {
     NiAVObject base;
     float unknown[4];
     Ref Skin;
-    Ref ShaderProperty;
-    Ref AlphaProperty;
+    Ref bsProperties[2]<comment="<NiProperty>">;
     byte flag1 <comment="Vertex Data Type">;
     byte flag2 <format=hex,comment="2">;
     byte flag3 <format=hex,comment="43h">;
@@ -68,24 +71,7 @@ typedef struct {
 } BSTriShape <name="BSTriShape">;
 
 typedef struct {
-    NiAVObject base;
-    int unknown[4];
-    Ref Skin;
-    Ref ShaderProperty <comment="<Shader>">;
-    Ref unk;
-    byte flag1 <comment="Vertex Data Type">;
-    byte flag2 <format=hex,comment="2">;
-    byte flag3 <format=hex,comment="43h">;
-    byte flag4  <format=hex,comment="0 mostly, 50 sometimes">;
-    byte flag5 <format=hex>;
-    byte flag6 <format=hex,comment="B0h">;
-    byte flag7 <format=hex,comment="05h">;
-    byte flag8 <format=hex>;
-    int numTris;
-    ushort numVerts;
-    int triVertBlockSize;
-    VERTDATA verts[numVerts];
-    Triangle tris[numTris];
+    BSTriShape base <open=true>;
     int numTris;
     int numUnk;
     int numUnk;
@@ -132,7 +118,8 @@ void LoadBlocks(int64 blockStart, Header& header) {
     local int diff, curPos;
 
 #define WRITE_HEADER if (wrote_header == 0) { \
-                Warning("\nErrors:\n"); \
+                Warning("Errors"); \
+                Printf("\nErrors:\n"); \
                 wrote_header = 1; }
 
     wrote_header = 0;
@@ -188,7 +175,7 @@ void LoadBlocks(int64 blockStart, Header& header) {
 
         else {
             WRITE_HEADER;
-            Warning("%4d | %-50s | Missing\n", block_idx, blockType);
+            Printf("%4d | %-50s | Missing\n", block_idx, blockType);
             skip_check = 1;
         }
 
@@ -200,7 +187,7 @@ void LoadBlocks(int64 blockStart, Header& header) {
             diff = blockEnd - curPos;
             if ( diff != 0 ) {
                 WRITE_HEADER;
-                Warning("%4d | %-50s | %5d | %5d != %5d | %5d\n",
+                Printf("%4d | %-50s | %5d | %5d != %5d | %5d\n",
                  block_idx, blockType, blockPos, blockEnd, curPos, diff);
                 SetForeColor(cRed);
 
