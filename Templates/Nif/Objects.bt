@@ -23,7 +23,7 @@ typedef struct {
 	    /*! Extra data for pre-3.0 versions. */
 	    bool hasOldExtraData;
 		if ( hasOldExtraData ) {
-	        /*! (=NiStringExtraData) */
+	        /*! (=NiString ExtraData) */
 	        IndexString oldExtraPropName;
 	        /*! ref */
 	        unsigned int oldExtraInternalId;
@@ -51,7 +51,7 @@ typedef struct {
 
 string CommentNiObject(NiObject& obj) {
     if (exists(header))
-        return CommentNifString(header.strings[obj.name.value]);
+        return CommentNiString (header.strings[obj.name.value]);
     return "";
 }
 
@@ -283,3 +283,39 @@ typedef struct {
 	    unsigned int unknownInt2;
     }
 } NiAlphaProperty <name="NiAlphaProperty">;
+
+
+typedef struct {
+    NiExtraData base;
+    if ( info_version <= 0x04020200 ) {
+	    /*!
+	     * The number of bytes left in the record.  Equals the length of the following
+	     * string + 4.
+	     */
+	    unsigned int bytesRemaining;
+    }
+	/*! The string. */
+	IndexString stringData;
+
+} NiStringExtraData <name="NiStringExtraData">;
+
+
+typedef struct {
+  	/*! Object name. */
+	NiString  name;
+	/*! Object reference. */
+	Ptr avObject<comment="NiAVObject *">;
+
+} AVObject;
+
+typedef struct {
+
+	/*! Unknown. */
+	unsigned int unknownInt;
+	/*! Number of objects. */
+    unsigned int numObjs;
+    if (numObjs > 0) {
+	    /*! The objects. */
+	    AVObject objs[numObjs]<optimize=false>;
+    }
+} NiDefaultAVObjectPalette <name="NiDefaultAVObjectPalette">;

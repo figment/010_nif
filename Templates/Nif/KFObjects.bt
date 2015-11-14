@@ -1,0 +1,618 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+// Define the headers
+LittleEndian(); 
+
+typedef unsigned char	byte;
+typedef unsigned char	bool;
+
+typedef struct {
+	/*! Index of the next controller. */
+	Ref nextController <comment="NiTimeController">;
+	/*!
+	 * Controller flags (usually 0x000C). Probably controls loops.
+	 *             Bit 0 : Anim type, 0=APP_TIME 1=APP_INIT
+	 *             Bit 1-2 : Cycle type  00=Loop 01=Reverse 10=Loop
+	 *             Bit 3 : Active
+	 *             Bit 4 : Play backwards
+	 */
+	unsigned short flags;
+	/*! Frequency (is usually 1.0). */
+	float frequency;
+	/*! Phase (usually 0.0). */
+	float phase;
+	/*! Controller start time. */
+	float startTime;
+	/*! Controller stop time. */
+	float stopTime;
+    if ( info_version >= 0x0303000D ) {
+	    /*!
+	     * Controller target (object index of the first controllable ancestor of this
+	     * object).
+	     */
+	    Ptr target <comment="NiObjectNET">;
+    }
+	if ( info_version <= 0x03010000 ) {
+	    /*! Unknown integer. */
+	    unsigned int unknownInteger;
+    }   
+} NiTimeController <name="NiTimeController">;
+
+
+typedef NiTimeController NiInterpController <name="NiInterpController">;
+
+typedef struct {
+    NiInterpController base;
+
+	/*! Link to interpolator. */
+	Ref interpolator <comment="NiInterpolator">;
+
+} NiSingleInterpController <name="NiSingleInterpController">;
+
+typedef struct {
+    NiSingleInterpController base;
+
+    if ( info_version <= 0x0A010000 ) {
+	    /*! Keyframe controller data index. */
+	    Ref data <comment="NiKeyframeData">;
+    }
+
+} NiKeyframeController <name="NiKeyframeController">;
+
+
+typedef NiKeyframeController NiTransformController <name="NiTransformController">;
+
+typedef struct {
+    // NiKeyBasedInterpolator base;
+
+	/*! Translate. */
+	Vector3 translation;
+	/*! Rotation. */
+	Quaternion rotation;
+	/*! Scale. */
+	float scale;
+
+    if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*! Unknown. */
+	    byte unknownBytes[3];
+    }
+	/*! Refers to NiTransformData. */
+	Ref data <comment="NiTransformData">;
+    
+} NiTransformInterpolator <name="NiTransformInterpolator">;
+
+
+typedef struct (KeyType type) {
+	float time; /*!< The time on the animation timeline that this keyframe takes affect. */ 
+	float data; /*!< The data being keyed to the timeline. */ 
+    if ( type == QUADRATIC_KEY ) {
+	    float forward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the forward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+	    float backward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the backward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+    } else if ( type == TBC_KEY ) {
+	    float tension; /*!< The amount of tension to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float bias; /*!< The amount of bias to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float continuity; /*!< The amount of continuity to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+    }
+} KeyFloat <name="KeyFloat">;
+
+typedef struct (KeyType type) {
+	float time; /*!< The time on the animation timeline that this keyframe takes affect. */ 
+	Vector3 data; /*!< The data being keyed to the timeline. */ 
+    if ( type == QUADRATIC_KEY ) {
+//	    Vector3 forward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the forward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+//        Vector3 backward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the backward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+    } else if ( type == TBC_KEY ) {
+	    float tension; /*!< The amount of tension to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float bias; /*!< The amount of bias to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float continuity; /*!< The amount of continuity to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+    }
+} KeyVector3 <name="KeyVector3">;
+
+typedef struct (KeyType type) {
+	float time; /*!< The time on the animation timeline that this keyframe takes affect. */ 
+	Quaternion data; /*!< The data being keyed to the timeline. */ 
+    if ( type == QUADRATIC_KEY ) {
+	    //Quaternion forward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the forward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+	    //Quaternion backward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the backward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+    } else if ( type == TBC_KEY ) {
+	    float tension; /*!< The amount of tension to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float bias; /*!< The amount of bias to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float continuity; /*!< The amount of continuity to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+    }
+} KeyQuaternion <name="KeyQuaternion">;
+
+typedef struct  {
+	/*! Number of keys in the array. */
+	unsigned int numKeys;
+    if (numKeys > 0){
+	    /*! The key type. */
+	    KeyType interpolation;
+	    /*! The keys. */
+	    KeyFloat keys(interpolation)[numKeys]<optimize=false>;
+    }
+} KeyGroupFloat <name="KeyGroup<float>">;
+
+typedef struct  {
+	/*! Number of keys in the array. */
+	unsigned int numKeys;
+    if (numKeys > 0){
+	    /*! The key type. */
+	    KeyType interpolation;
+	    /*! The keys. */
+	    KeyVector3 keys(interpolation)[numKeys]<optimize=false>;
+    }
+} PosKeyGroupVector3;
+
+typedef struct {
+
+	/*!
+	 * The number of quaternion rotation keys. If the rotation type is XYZ (type 4)
+	 * then this *must* be set to 1, and in this case the actual number of keys is
+	 * stored in the XYZ Rotations field.
+	 */
+	unsigned int numRotationKeys;
+	if ( (numRotationKeys != 0) ) {
+	    /*!
+	     * The type of interpolation to use for rotation.  Can also be 4 to indicate that
+	     * separate X, Y, and Z values are used for the rotation instead of Quaternions.
+	     */
+	    KeyType rotationType;
+	    if ( (rotationType != 4) ) {
+	        /*! The rotation keys if Quaternion rotation is used. */
+	        KeyQuaternion quaternionKeys(rotationType)[numRotationKeys]<optimize=false>;
+	    };
+	    if ( info_version <= 0x0A010000 ) {
+	        /*! Possibly a vestigial time value?  Doesn't appear to be significant. */
+	        float unknownFloat;
+	    };
+	    if ( (rotationType == 4) ) {
+	        /*! Individual arrays of keys for rotating X, Y, and Z individually. */
+	        KeyGroupFloat xyzRotations[3]<optimize=false>;
+	    };
+	};
+	/*! Translation keys. */
+	PosKeyGroupVector3 translations;
+
+	/*! Scale keys. */
+	KeyGroupFloat scales;
+
+} NiKeyframeData <comment="NiKeyframeData">;
+
+typedef NiKeyframeData NiTransformData <comment="NiTransformData">;
+
+
+typedef struct {
+    NiTimeController base;
+
+	/*! Designates whether animation sequences are cumulative? */
+	bool cumulative;
+	/*! The number of controller sequence objects. */
+	unsigned int numControllerSequences;
+    if (numControllerSequences > 0) {
+	    /*! Refers to a list of NiControllerSequence object. */
+	    Ref controllerSequences[numControllerSequences]<optimize=false,comment="NiControllerSequence">;
+    }
+	/*! Refers to a NiDefaultAVObjectPalette. */
+	Ref objectPalette <comment="NiDefaultAVObjectPalette">;
+
+
+} NiControllerManager <name="NiControllerManager">;
+
+
+
+typedef struct {
+    NiInterpController base;
+
+	/*! The number of target pointers that follow. */
+	unsigned short numExtraTargets;
+    if (numExtraTargets > 0) {
+	    /*! NiNode Targets to be controlled. */
+	    Ptr extraTargets[numExtraTargets]<optimize=false,comment="NiAVObject *">;
+    }
+
+} NiMultiTargetTransformController <name="NiMultiTargetTransformController">;
+
+typedef struct {
+	if ( info_version <= 0x0A010000 ) {
+	    /*! Name of a controllable object in another NIF file. */
+	    IndexString targetName;
+	    /*! Link to a controller. */
+	    Ref controller <comment="NiTimeController">;
+	};
+	if ( info_version >= 0x0A01006A ) {
+	    /*! Link to an interpolator. */
+	    Ref interpolator <comment="NiInterpolator">;
+	    /*! Link to a controller. */
+	    Ref controller <comment="NiTimeController">;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*! Unknown. */
+	    Ref unknownLink2 <comment="NiObject">;
+	    /*! Unknown. */
+	    unsigned short unknownShort0;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( (info_userVersion >= 10) ) ) {
+	    /*!
+	     * Idle animations tend to have low values for this, and NIF objects that have high
+	     * values tend to correspond with the important parts of the animation.
+	     */
+	    byte priority;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x14000005 ) ) {
+	    /*!
+	     * Refers to the NiString Palette which contains the name of the controlled NIF
+	     * object.
+	     */
+	    Ref stringPalette<comment="NiString Palette">;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*! The name of the animated node. */
+	    IndexString nodeName;
+	};
+	if ( info_version >= 0x14010003 ) {
+	    /*! The name of the animated node. */
+	    IndexString nodeName;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x14000005 ) ) {
+	    /*!
+	     * Offset in the string palette where the name of the controlled node (NiNode,
+	     * NiTriShape, ...) starts.
+	     */
+	    unsigned int nodeNameOffset;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*!
+	     * Name of the property (NiMaterialProperty, ...), if this controller controls a
+	     * property.
+	     */
+	    IndexString propertyType;
+	};
+	if ( info_version >= 0x14010003 ) {
+	    /*!
+	     * Name of the property (NiMaterialProperty, ...), if this controller controls a
+	     * property.
+	     */
+	    IndexString propertyType;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x14000005 ) ) {
+	    /*!
+	     * Offset in the string palette where the property (NiMaterialProperty, ...)
+	     * starts, if this controller controls a property. Otherwise, -1.
+	     */
+	    unsigned int propertyTypeOffset;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*!
+	     * Probably the object type name of the controller in the NIF file that is child of
+	     * the controlled object.
+	     */
+	    IndexString controllerType;
+	};
+	if ( info_version >= 0x14010003 ) {
+	    /*!
+	     * Probably the object type name of the controller in the NIF file that is child of
+	     * the controlled object.
+	     */
+	    IndexString controllerType;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x14000005 ) ) {
+	    /*!
+	     * Apparently the offset in the string palette of some type of controller related
+	     * to Interpolator (for example, a 'NiTransformInterpolator' will have here a
+	     * 'NiTransformController', etc.). Sometimes the type of controller that links to
+	     * the interpolator. Probably it refers to the controller in the NIF file that is
+	     * child of the controlled object, via its type name.
+	     */
+	    unsigned int controllerTypeOffset;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*!
+	     * Some variable string (such as 'SELF_ILLUM', '0-0-TT_TRANSLATE_U', 'tongue_out',
+	     * etc.).
+	     */
+	    IndexString variable1;
+	};
+	if ( info_version >= 0x14010003 ) {
+	    /*!
+	     * Some variable string (such as 'SELF_ILLUM', '0-0-TT_TRANSLATE_U', 'tongue_out',
+	     * etc.).
+	     */
+	    IndexString variable1;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x14000005 ) ) {
+	    /*!
+	     * Offset in the string palette where some variable string starts (such as
+	     * 'SELF_ILLUM', '0-0-TT_TRANSLATE_U', 'tongue_out', etc.). Usually, -1.
+	     */
+	    unsigned int variable1Offset;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*! Another variable string, apparently used for particle system controllers. */
+	    IndexString variable2;
+	};
+	if ( info_version >= 0x14010003 ) {
+	    /*! Another variable string, apparently used for particle system controllers. */
+	    IndexString variable2;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x14000005 ) ) {
+	    /*!
+	     * Offset in the string palette where some variable string starts (so far only
+	     * 'EmitterActive' and 'BirthRate' have been observed in official files, used for
+	     * particle system controllers). Usually, -1.
+	     */
+	    unsigned int variable2Offset;
+	};
+
+} ControllerLink <name="ControllerLink">;
+
+typedef struct {
+    	/*!
+	 * Name of this object. This is also the name of the action associated with this
+	 * file. For instance, if the original NIF file is called "demon.nif" and this
+	 * animation file contains an attack sequence, then the file would be called
+	 * "demon_attack1.kf" and this field would contain the string "attack1".
+	 */
+	IndexString name;
+    if ( info_version <= 0x0A010000 ) {
+	    /*! Name of following referenced NiTextKeyExtraData class. */
+	    IndexString textKeysName;
+	    /*! Link to NiTextKeyExtraData. */
+	    Ref textKeys<comment="NiTextKeyExtraData">;
+    }
+    if ( ( info_version >= 0x14030009 ) && ( info_version <= 0x14030009 ) && ( info_userVersion == 131072 ) ) {
+	    /*! Unknown */
+	    int unknownInt4;
+	    /*! Unknown */
+	    int unknownInt5;
+    }
+	/*! Number of controlled objects. */
+	unsigned int numControlledBlocks;
+    if ( info_version >= 0x0A01006A ) {
+	    /*! Unknown. */
+	    unsigned int unknownInt1;
+    }
+    if (numControlledBlocks > 0) {
+	    /*! Refers to controlled objects. */
+	    ControllerLink controlledBlocks[numControlledBlocks]<optimize=false>;
+    }
+
+} NiSequence <name="NiSequence">;
+
+typedef struct {
+    NiSequence base;
+
+	if ( info_version >= 0x0A01006A ) {
+	    /*! Weight/priority of animation? */
+	    float weight;
+	    /*!
+	     * Link to NiTextKeyExtraData. Replaces the other Text Keys field in versions
+	     * 10.1.0.106 and up.
+	     */
+	    Ref textKeys<comment="NiTextKeyExtraData">;
+	    /*! Anim cycle type? Is part of "Flags" in other objects? */
+	    CycleType cycleType;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*! Unknown. */
+	    unsigned int unknownInt0;
+	};
+	if ( info_version >= 0x0A01006A ) {
+	    /*! The animation frequency. */
+	    float frequency;
+	    /*! The controller sequence start time? */
+	    float startTime;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x0A040001 ) ) {
+	    /*! Unknown. */
+	    float unknownFloat2;
+	};
+	if ( info_version >= 0x0A01006A ) {
+	    /*! The controller sequence stop time? */
+	    float stopTime;
+	};
+	if ( ( info_version >= 0x0A01006A ) && ( info_version <= 0x0A01006A ) ) {
+	    /*! Unknown. */
+	    byte unknownByte;
+	};
+	if ( info_version >= 0x0A01006A ) {
+	    /*! Refers to NiControllerManager which references this object, if any. */
+	    Ptr manager<comment="NiControllerManager *">;
+	    /*! Name of target node Controller acts on. */
+	    IndexString targetName;
+	};
+	if ( ( info_version >= 0x0A020000 ) && ( info_version <= 0x14000005 ) ) {
+	    /*! Refers to NiString Palette. */
+	    Ref stringPalette<comment="NiString Palette">;
+	};
+	if ( ( info_version >= 0x14020007 ) && ( ((info_userVersion >= 11) && ((info_userVersion2 >= 24) && (info_userVersion2 <= 28))) ) ) {
+	    /*! Unknown */
+	    Ref animNotes<comment="BSAnimNotes">;
+	};
+	if ( ( info_version >= 0x14020007 ) && ( ((info_userVersion >= 11) && (info_userVersion2 > 28)) ) ) {
+	    /*! Unknown */
+	    short unknownShort1;
+	};
+	if ( info_version >= 0x14030009 ) {
+	    /*!
+	     * Unknown, found in some Lazeska and Krazy Rain .KFs (seems to be 64 when
+	     * present).
+	     */
+	    unsigned int unknownInt3;
+	};
+
+} NiControllerSequence <name="NiControllerSequence">;
+
+
+
+typedef struct {
+    uint numRotKeys;
+    if(numRotKeys > 0) {
+        uint rotType;
+        if(rotType != 4) {
+            struct QUATKEY {
+                float time;
+                Quaternion quat;
+            } quatKeys [numRotKeys];
+        } else {
+            float unkfloat;
+            uint numXyzKeys;
+            struct XYZROTKEY {
+                float time;
+                float value;        
+            } xyzRotations [numXyzKeys];
+        }
+    }
+    uint numTransKeys;
+    if(numTransKeys !=0 ) {
+        uint transInterpType;
+        struct TRANSKEY {
+            float time;
+            Vector3 value;
+        } translations [numTransKeys];
+    }
+    uint numScaleKeys;
+    if(numScaleKeys !=0) {
+        uint scaleInterpType;
+        struct SCALEKEY{
+            float time;
+            float value;
+        } scales [numScaleKeys];
+    }
+ 
+} NiTransformDataX;
+
+typedef struct {
+    // NiKeyBasedInterpolator base;
+
+	/*! Value when posed?  At time 0? */
+	bool boolValue;
+	/*! Refers to a NiBoolData object. */
+	Ref data<comment="NiBoolData">;
+
+} NiBoolInterpolator <name ="NiBoolInterpolator">;
+
+
+typedef NiSingleInterpController NiBoolInterpController <name="NiBoolInterpController">;
+
+typedef struct {
+    NiBoolInterpController base;
+    
+    if ( info_version <= 0x0A010000 ) {
+	    /*! Visibility controller data object index. */
+	    Ref data <comment="NiVisData">;
+    }
+} NiVisController <name="NiVisController">;
+
+typedef struct { 
+    // NiInterpolator base;
+	/*! Unknown. */
+	unsigned short unknownShort;
+	/*! Unknown. */
+	unsigned int unknownInt;
+} NiBlendInterpolator <name="NiBlendInterpolator">;
+
+
+typedef struct {
+    NiBlendInterpolator base;
+
+	/*! The interpolated bool? */
+	byte boolValue;
+
+} NiBlendBoolInterpolator <name="NiBlendBoolInterpolator">;
+
+
+typedef struct {
+    // NiKeyBasedInterpolator base;
+
+	/*! Value when posed?  At time 0? */
+	float floatValue;
+	/*! Float data? */
+	Ref data<comment="NiFloatData">;
+
+} NiFloatInterpolator <name="NiFloatInterpolator">;
+
+typedef struct {
+    NiBlendInterpolator base;
+
+	/*! The interpolated float? */
+	float floatValue;
+
+} NiBlendFloatInterpolator <name="NiBlendFloatInterpolator">;
+
+
+typedef KeyGroupFloat NiFloatData <name="NiFloatData">;
+
+typedef struct {
+	float time; /*!< The time on the animation timeline that this keyframe takes affect. */ 
+	IndexString data; /*!< The data being keyed to the timeline. */ 
+} KeyIndexString <name="KeyIndexString">;
+
+
+typedef struct {
+    NiExtraData base;
+    if ( info_version <= 0x04020200 ) {
+	    /*! Unknown.  Always equals zero in all official files. */
+	    unsigned int unknownInt1;
+    }
+	/*! The number of text keys that follow. */
+	unsigned int numTextKeys;
+    if (numTextKeys > 0) {
+	    /*!
+	     * List of textual notes and at which time they take effect. Used for designating
+	     * the start and stop of animations and the triggering of sounds.
+	     */
+	    KeyIndexString textKeys[numTextKeys]<optimize=false,comment="Key<IndexString>">;
+    }
+    
+} NiTextKeyExtraData <comment="NiTextKeyExtraData">;
+
+
+typedef struct (KeyType type) {
+
+	float time; /*!< The time on the animation timeline that this keyframe takes affect. */ 
+	byte data; /*!< The data being keyed to the timeline. */ 
+    if ( type == QUADRATIC_KEY ) {
+	    byte forward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the forward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+	    byte backward_tangent; /*!< A piece of data of the same type as is being keyed to the time line used as the backward tangent in quadratic interpolation.  Ignored if key type is set as something else. */ 
+    } else if ( type == TBC_KEY ) {
+	    float tension; /*!< The amount of tension to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float bias; /*!< The amount of bias to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+	    float continuity; /*!< The amount of continuity to use in tension, bias, continuity interpolation.  Ignored if key type is something else.*/
+    }
+    
+} KeyByte <name="KeyByte">;
+
+typedef struct {
+
+	/*! Number of keys in the array. */
+	unsigned int numKeys;
+    if (numKeys > 0){
+	    /*! The key type. */
+	    KeyType interpolation;
+	    /*! The keys. */
+	    KeyByte keys(interpolation)[numKeys]<optimize=false>;
+    }
+} KeyGroupByte<name="KeyGroup<byte>">;
+
+
+typedef KeyGroupByte NiBoolData <name="NiBoolData">;
+
+typedef NiSingleInterpController NiFloatInterpController <name="NiFloatInterpController">;
+
+typedef struct {
+    NiFloatInterpController base;
+
+    if ( info_version <= 0x0A010000 ) {
+	    /*! Alpha controller data index. */
+	    Ref data<comment="NiFloatData">;
+    }
+} NiAlphaController <name="NiAlphaController">;

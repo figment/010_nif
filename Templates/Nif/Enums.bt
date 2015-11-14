@@ -469,6 +469,7 @@ typedef enum <unsigned int> {
 } EffectType <name="EffectType",comment="The type of information that's store in a texture used by a NiTextureEffect.">;
 
 typedef enum <unsigned int> {
+    NONE_KEY = 0,
 	LINEAR_KEY = 1, /*!< Use linear interpolation. */
 	QUADRATIC_KEY = 2, /*!< Use quadratic interpolation.  Forward and back tangents will be stored. */
 	TBC_KEY = 3, /*!< Use Tension Bias Continuity interpolation.  Tension, bias, and continuity will be stored. */

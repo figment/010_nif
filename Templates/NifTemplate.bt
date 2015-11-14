@@ -15,7 +15,9 @@ LittleEndian();
 #include "nif/enums.bt"
 #include "nif/basic.bt"
 #include "nif/objects.bt"
+#include "nif/kfobjects.bt"
 #include "nif/bsobjects.bt"
+#include "nif/fo4objects.bt"
 
 typedef struct {
     if ( info_version <= 0x0A000102 )
@@ -82,7 +84,7 @@ typedef struct {
     if ( info_version >= 0x0A000100 ) {
 	    unsigned short numBlockTypes;
         if (numBlockTypes > 0) {
-	        NifString blockTypes[numBlockTypes] <optimize=false>;
+	        NiString blockTypes[numBlockTypes] <optimize=false>;
 	        unsigned short blockTypeIndex[numBlocks];
             if ( info_version >= 0x14020007 )
 	            unsigned int blockSize[numBlocks];
@@ -91,7 +93,7 @@ typedef struct {
     if ( info_version >= 0x14010003 ) {
 	    unsigned int numStrings;
 	    unsigned int maxStringLength;
-        NifString strings[numStrings] <optimize=false>;
+        NiString strings[numStrings] <optimize=false>;
     }
 	unsigned int unknownInt2;
 
@@ -111,7 +113,7 @@ void DumpBlocks(int64 blockStart, Header& header) {
         // FSeek(blockStart);
         typeIdx = header.blockTypeIndex[block_idx];
         blockSize = header.blockSize[block_idx];
-        blockType = ReadNifString(header.blockTypes[typeIdx]);
+        blockType = ReadNiString(header.blockTypes[typeIdx]);
         Printf("%4d | %-50s | %08x - %08x | %8d - %8d | (%8d)\n", 
             block_idx, blockType,
             blockPos, blockPos+blockSize-1,

@@ -55,8 +55,11 @@ typedef struct {
     byte flag1 <comment="Vertex Data Type">;
     byte flag2 <format=hex,comment="2">;
     byte flag3 <format=hex,comment="43h">;
-    byte flag4 <format=hex>;
-    int unknown <format=hex>;
+    byte flag4 <format=hex, comment="0 or 50h">;
+    byte flag5 <format=hex>;
+    byte flag6 <format=hex,comment="B0h">;
+    byte flag7 <format=hex,comment="05h">;
+    byte flag8 <format=hex>;
     int numTris;
     ushort numVerts;
     int triVertBlockSize;
@@ -74,7 +77,10 @@ typedef struct {
     byte flag2 <format=hex,comment="2">;
     byte flag3 <format=hex,comment="43h">;
     byte flag4  <format=hex,comment="0 mostly, 50 sometimes">;
-    int numVertices10 <format=hex,comment="0x10 larger than vert size">;
+    byte flag5 <format=hex>;
+    byte flag6 <format=hex,comment="B0h">;
+    byte flag7 <format=hex,comment="05h">;
+    byte flag8 <format=hex>;
     int numTris;
     ushort numVerts;
     int triVertBlockSize;
@@ -109,12 +115,6 @@ typedef struct {
     int unk;
 } bhkNPCollisionObject <name="bhkNPCollisionObject">;
 
-typedef struct {
-    int blobSize;
-    char blob[blobSize] <format=hex>;
-} bhkPhysicsSystem <name="bhkPhysicsSystem">;
-
-
 
 local bool isFallout4 = false;
 if (info_userVersion == 12 && info_userVersion2 == 130)
@@ -137,39 +137,53 @@ void LoadBlocks(int64 blockStart, Header& header) {
         FSeek(blockPos);
         typeIdx = header.blockTypeIndex[block_idx];
         blockSize = header.blockSize[block_idx];
-        blockType = ReadNifString(header.blockTypes[typeIdx]);
+        blockType = ReadNiString(header.blockTypes[typeIdx]);
         blockEnd = blockPos + blockSize;
 
-        skip_check = 0;
-        if (Strcmp(blockType, "NiNode") == 0)
-            // NiNode node;
-            skip_check = 1;
-        else if (Strcmp(blockType, "BSSubIndexTriShape") == 0)
-            BSSubIndexTriShape shape;
-        else if (Strcmp(blockType, "BSSkin::Instance") == 0)
-            BSSkin_Instance skin;
-        else if (Strcmp(blockType, "BSSkin::BoneData") == 0)
-            BSSkin_BoneData data;
-        else if (Strcmp(blockType, "BSLightingShaderProperty") == 0)
-            BSLightingShaderProperty property;
-        else if (Strcmp(blockType, "BSShaderTextureSet") == 0)
-            BSShaderTextureSet textureSet;
-        else if (Strcmp(blockType, "BSXFlags") == 0)
-            BSXFlags flags;
-        else if (Strcmp(blockType, "bhkNPCollisionObject") == 0)
-            bhkNPCollisionObject coll;
-        else if (Strcmp(blockType, "bhkPhysicsSystem") == 0)
-            bhkPhysicsSystem physics;
-        else if (Strcmp(blockType, "BSTriShape") == 0)
-            BSTriShape shape;
-        else if (Strcmp(blockType, "NiAlphaProperty") == 0)
-            NiAlphaProperty prop;        
+        if      (blockType == "NiNode")                            NiNode                           block<hidden=true>;
+        else if (blockType == "BSSubIndexTriShape")                BSSubIndexTriShape               block;
+        else if (blockType == "BSSkin::Instance")                  BSSkin_Instance                  block;
+        else if (blockType == "BSSkin::BoneData")                  BSSkin_BoneData                  block;
+        else if (blockType == "BSLightingShaderProperty")          BSLightingShaderProperty         block;
+        else if (blockType == "BSShaderTextureSet")                BSShaderTextureSet               block;
+        else if (blockType == "BSXFlags")                          BSXFlags                         block;
+        else if (blockType == "bhkNPCollisionObject")              bhkNPCollisionObject             block;
+        else if (blockType == "bhkPhysicsSystem")                  bhkPhysicsSystem                 block;
+        else if (blockType == "BSTriShape")                        BSTriShape                       block;
+        else if (blockType == "NiAlphaProperty")                   NiAlphaProperty                  block;        
+        else if (blockType == "NiTransformController")             NiTransformController            block;        
+        else if (blockType == "BSConnectPoint::Parents")           BSConnectPoint_Parents           block;
+        else if (blockType == "NiTransformInterpolator")           NiTransformInterpolator          block;
+        else if (blockType == "NiTransformData")                   NiTransformData                  block;
+        else if (blockType == "NiControllerManager")               NiControllerManager              block;
+        else if (blockType == "NiIntegerExtraData")                NiIntegerExtraData               block;
+        else if (blockType == "NiStringExtraData")                 NiStringExtraData                block;
+        else if (blockType == "NiMultiTargetTransformController")  NiMultiTargetTransformController block;
+        else if (blockType == "NiControllerSequence")              NiControllerSequence             block;
+        else if (blockType == "NiBoolInterpolator")                NiBoolInterpolator               block;
+        else if (blockType == "NiVisController")                   NiVisController                  block;
+        else if (blockType == "NiBoolInterpController")            NiBoolInterpController           block;
+        else if (blockType == "NiFloatInterpolator")               NiFloatInterpolator              block;
+        else if (blockType == "NiFloatData")                       NiFloatData                      block;
+        else if (blockType == "NiBoolData")                        NiBoolData                       block;
+        else if (blockType == "NiTextKeyExtraData")                NiTextKeyExtraData               block;
+        else if (blockType == "NiBlendBoolInterpolator")           NiBlendBoolInterpolator          block;
+        else if (blockType == "NiBlendFloatInterpolator")          NiBlendFloatInterpolator         block;
+        else if (blockType == "NiDefaultAVObjectPalette")          NiDefaultAVObjectPalette         block; 
+        else if (blockType == "BSBehaviorGraphExtraData")          BSBehaviorGraphExtraData         block; 
+        else if (blockType == "BSEffectShaderPropertyFloatController") BSEffectShaderPropertyFloatController block; 
+        else if (blockType == "BSLightingShaderPropertyFloatController") BSLightingShaderPropertyFloatController block; 
+        else if (blockType == "BSEffectShaderProperty")            BSEffectShaderProperty           block; 
+        else if (blockType == "BSNiAlphaPropertyTestRefController") BSNiAlphaPropertyTestRefController block; 
+        else if (blockType == "NiAlphaController")                 NiAlphaController                block; 
 
         else {
             WRITE_HEADER;
             Printf("%4d | %-50s | Missing\n", block_idx, blockType);
             skip_check = 1;
         }
+
+        SetForeColor (cNone);
 
         // print out mismatch errors
         if (!skip_check) {
@@ -179,6 +193,8 @@ void LoadBlocks(int64 blockStart, Header& header) {
                 WRITE_HEADER;
                 Printf("%4d | %-50s | %5d | %5d != %5d | %5d\n",
                  block_idx, blockType, blockPos, blockEnd, curPos, diff);
+                SetForeColor(cRed);
+
             }
         }
 

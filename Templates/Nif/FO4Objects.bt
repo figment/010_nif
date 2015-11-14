@@ -1,0 +1,68 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+
+// Define the headers
+LittleEndian(); 
+
+//if( !exists( header ) ) {
+//    Printf("Load NifTemplate.bt or Nif_Fallout4.bt");
+//    Exit(-1);
+//}
+
+typedef unsigned char	byte;
+
+
+typedef struct  {
+    int unk;
+    Ref boneData <comment="BSSkin::BoneData">;
+    int numBones;
+    Ref bones[numBones];
+    int unk;
+} BSSkin_Instance <name="BSSkin::Instance">;
+
+typedef struct {
+    uint numBones;
+    struct BSSkin_BoneTrans {
+        Vector3 bsphere <comment="?">;
+        float bsrad <comment="?">;
+        Vector3 rot[3];
+        Vector3 trans;
+        float scale;
+    } bones[numBones]<name="bones",optimize=false>;
+} BSSkin_BoneData <name="BSSkin::BoneData">;
+
+
+typedef struct {
+    Ref data <comment="BSBehaviorGraphExtraData>">;
+    int unk;
+    NiString root;
+    NiString variableName;
+    float unk;
+    unsigned short unk <format=hex>;
+    unsigned short unk <format=hex>;
+    unsigned short unk <format=hex>;
+    unsigned short unk <format=hex>;
+    unsigned short unk <format=hex>;
+    unsigned short unk <format=hex>;
+    float unk;
+    float unk;
+    float unk;
+    float unk;
+} BSConnectPoint_Parents <name="BSConnectPoint::Parents">;
+
+
+typedef struct {
+    int blobSize;
+    char blob[blobSize] <format=hex>;
+} bhkPhysicsSystem <name="bhkPhysicsSystem">;
+
+

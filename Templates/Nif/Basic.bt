@@ -51,18 +51,18 @@ int SizeShortString(ShortString &s) {
 typedef struct {
     int len;
 	string str;
-} NifString <read=ReadNifString,size=SizeNifString,comment=CommentNifString>;
+} NiString  <read=ReadNiString ,size=SizeNiString ,comment=CommentNiString >;
 
-string ReadNifString( NifString &s ) { 
+string ReadNiString ( NiString  &s ) { 
     local int len = ReadInt(startof(s));
     if (len == 0) return "";
     return ReadString(startof(s)+4, len); 
 }
-int SizeNifString( NifString &s) {
+int SizeNiString ( NiString  &s) {
     local int len = ReadInt(startof(s));
     return 4 + len; 
 }
-string CommentNifString( NifString &s ) { 
+string CommentNiString ( NiString  &s ) { 
     if (s.len == 0) return "";
     return SubStr(s.str, 0, s.len); 
 }
@@ -97,7 +97,7 @@ typedef struct {
 string CommentIndexString(IndexString& obj) {
     local char buffer[256];
     if (exists(header)) {
-        local string name = CommentNifString(header.strings[obj.value]);
+        local string name = CommentNiString (header.strings[obj.value]);
         SPrintf(buffer, "[%2d] %s", obj.value, name );
         return buffer;
     } else {
@@ -250,83 +250,3 @@ struct BoundingBox {
 	Vector3 radius;
 };
 
-
-
-typedef struct {
-    int nameID;
-    uint numControlled;
-    uint unk1;
-    struct CONTROLLERLINK {
-        int interpolatorRef;
-        int controllerRef;
-        byte priority;
-        int nodeName;
-        int propType;
-        int contType;
-        int var1;
-        int var2;        
-    } controlledBlocks [numControlled];
-    float weight;
-    int textkeysRef;
-    uint cycleType;
-    float freq;
-    float startTime;
-    float stopTime;
-    int managerPtr;
-    int targetName;
-    short unkshort1;
-   
-} NiControllerSequence;
- 
-typedef struct {
-    int nameId;
-    uint numTextKeys;
-    struct TEXTKEY {
-        float Time;
-        int valueId;
-    } TextKeys[numTextKeys]<optimize=false>;
-} NiTextKeyExtraData;
- 
-typedef struct {
-    Vector3 translation;
-    Quaternion rotation;
-    float scale;
-    int interpDataRef;
-} NiTransformInterpolator;
- 
-typedef struct {
-    uint numRotKeys;
-    if(numRotKeys > 0) {
-        uint rotType;
-        if(rotType != 4) {
-            struct QUATKEY {
-                float time;
-                Quaternion quat;
-            } quatKeys [numRotKeys];
-        } else {
-            float unkfloat;
-            uint numXyzKeys;
-            struct XYZROTKEY {
-                float time;
-                float value;        
-            } xyzRotations [numXyzKeys];
-        }
-    }
-    uint numTransKeys;
-    if(numTransKeys !=0 ) {
-        uint transInterpType;
-    }
-    struct TRANSKEY {
-        float time;
-        Vector3 value;
-    } translations [numTransKeys];
-    uint numScaleKeys;
-    if(numScaleKeys !=0) {
-        uint scaleInterpType;
-    }
-    struct SCALEKEY{
-        float time;
-        float value;
-    } scales [numScaleKeys];
- 
-} NiTransformData;

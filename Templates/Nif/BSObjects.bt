@@ -138,27 +138,6 @@ typedef struct {
 } BSLightingShaderProperty <name="BSLightingShaderProperty">;
 
 
-
-typedef struct  {
-    int unk;
-    Ref boneData <comment="BSSkin::BoneData">;
-    int numBones;
-    Ref bones[numBones];
-    int unk;
-} BSSkin_Instance <name="BSSkin::Instance">;
-
-typedef struct {
-    uint numBones;
-    struct BSSkin_BoneTrans {
-        Vector3 bsphere <comment="?">;
-        float bsrad <comment="?">;
-        Vector3 rot[3];
-        Vector3 trans;
-        float scale;
-    } bones[numBones]<name="bones",optimize=false>;
-} BSSkin_BoneData <name="BSSkin::BoneData">;
-
-
 typedef struct {
 	/*! Number of Textures */
 	int numTextures;
@@ -173,7 +152,7 @@ typedef struct {
 	 *             6: Subsurface for Multilayer Parallax
 	 *             7: Back Lighting Map (SLSF2_Back_Lighting)
 	 */
-	NifString textures[numTextures]<optimize=false>;
+	NiString  textures[numTextures]<optimize=false>;
 } BSShaderTextureSet <name="BSShaderTextureSet">;
 
 
@@ -191,3 +170,84 @@ typedef struct {
  *         Bit 9 : Unknown(Skyrim)
  */
 typedef NiIntegerExtraData BSXFlags <name="BSXFlags">;
+
+typedef struct {
+    NiExtraData base;
+
+	/*! Name of the hkx file. */
+	IndexString behaviourGraphFile;
+	/*! Unknown, has to do with blending appended bones onto an actor. */
+	byte controlsBaseSkeleton;
+
+} BSBehaviorGraphExtraData <name="BSBehaviorGraphExtraData">;
+
+
+typedef struct {
+    NiFloatInterpController base;
+
+	/*! Which float variable in BSEffectShaderProperty to animate: */
+	EffectShaderControlledVariable typeOfControlledVariable;
+
+} BSEffectShaderPropertyFloatController <name="BSEffectShaderPropertyFloatController">;
+
+
+typedef struct {
+    NiFloatInterpController base;
+	/*! Which float variable in BSLightingShaderProperty to animate: */
+	LightingShaderControlledVariable typeOfControlledVariable;
+   
+} BSLightingShaderPropertyFloatController <name="BSLightingShaderPropertyFloatController">;
+
+typedef NiObject NiProperty <name="NiProperty">;
+
+typedef struct {
+    NiProperty base;
+    
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags1 shaderFlags1;
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags2 shaderFlags2;
+	/*! Offset UVs */
+	TexCoord uvOffset;
+	/*! Offset UV Scale to repeat tiling textures */
+	TexCoord uvScale;
+	/*! points to an external texture. */
+	NiString sourceTexture;
+	/*! How to handle texture borders. */
+	unsigned int textureClampMode;
+    if(!isFallout4) {
+	    /*! At this cosine of angle falloff will be equal to Falloff Start Opacity */
+	    float falloffStartAngle;
+	    /*! At this cosine of angle falloff will be equal to Falloff Stop Opacity */
+	    float falloffStopAngle;
+	    /*! Alpha falloff multiplier at start angle */
+	    float falloffStartOpacity;
+	    /*! Alpha falloff multiplier at end angle */
+	    float falloffStopOpacity;
+	    /*! Emissive color */
+	    Color4 emissiveColor;
+	    /*! Multiplier for Emissive Color (RGB part) */
+	    float emissiveMultiple;
+	    /*! Unknown. */
+	    float softFalloffDepth;
+	    /*!
+	     * Points to an external texture, used as palette for
+	     * SLSF1_Greyscale_To_PaletteColor/SLSF1_Greyscale_To_PaletteAlpha.
+	     */
+	    NiString greyscaleTexture;
+    }
+    if(isFallout4) {
+        float unkdata [11];
+        NiString  emissiveTex;
+        NiString  diffuseTexture;
+        NiString  specularTexture;  
+        float unkdata2;      
+        //unsigned int unk;  // not in PipboyDusty.nif  (probably based on flags)
+        //unsigned int unk;  // not in PipboyDusty.nif (probably based on flags)
+    } 
+
+} BSEffectShaderProperty <name="BSEffectShaderProperty">;
+
+typedef struct {
+    NiAlphaController base;
+} BSNiAlphaPropertyTestRefController <name="BSNiAlphaPropertyTestRefController">;
