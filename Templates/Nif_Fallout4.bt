@@ -30,6 +30,8 @@ typedef struct {
     hfloat ux;
     hfloat uy;
     char unk[8];
+
+if (1 == 1) {
     if (flag1 == 6) // from parent
         int vertColors <comment="Vertex Colors?">; 
 
@@ -47,6 +49,19 @@ typedef struct {
     if (flag1 == 9) { // FemaleEyesAO.nif
         int unk; 
     }
+} else { // Caliente
+    if((flag6 & 0x1) !=0) {
+        uint packed1;
+        uint packed2;
+    } if((flag6 &0x4) !=0) {
+       hfloat notable;
+        byte unkdata2[10];
+    } if((flag6 &0x2) !=0) {
+        byte colorData[4];
+    }
+}
+
+
 } VERTDATA <name="Vertices">;
 
 
@@ -66,16 +81,17 @@ typedef struct {
     int numTris;
     ushort numVerts;
     int triVertBlockSize;
-    VERTDATA verts[numVerts];
+    VERTDATA verts[numVerts]<optimize=false>;
     Triangle tris[numTris];
 } BSTriShape <name="BSTriShape">;
 
 typedef struct {
     BSTriShape base <open=true>;
     int numTris;
-    int numUnk;
-    int numUnk;
-    struct UnknownStruct {
+
+
+    struct Temp1
+    {
         int unknown;
         int unknown;
         int unknown;
@@ -87,10 +103,31 @@ typedef struct {
             int unknown;
         } UnknownStuff; 
         if (numStuff > 0)
-            UnknownStuff stuff[numStuff];
+            UnknownStuff stuff[numStuff]<optimize=false>;
+    } ;
+    
+    struct Temp2
+    {
+        int index;
+        hfloat unk;
+        hfloat unk;
+        int numUnks;
+        if (numUnks > 0)
+            float unk2[numUnks];
+    } ;
+    struct MysteryData
+    {
+        int num1;
+        int num2;
+        Temp1 unk1[num1]<optimize=false>;
+        int num1;
+        int num2;
+        int unk2[num1];
+        Temp2 unk3[num2]<optimize=false>;
     };
-    if (numUnk > 0)
-        UnknownStruct unknowns[numUnk] <optimize=false>;
+    MysteryData stuff;
+    LongString ssf;
+
 } BSSubIndexTriShape <name="BSSubIndexTriShape">;
 
 typedef struct {
@@ -101,7 +138,10 @@ typedef struct {
     int unk;
 } bhkNPCollisionObject <name="bhkNPCollisionObject">;
 
-
+typedef struct {
+    NiExtraData base;
+    int unk;
+} BSClothExtraData <name="BSClothExtraData">;
 
 
 
@@ -171,7 +211,8 @@ void LoadBlocks(int64 blockStart, Header& header) {
         else if (blockType == "NiAlphaController")                 NiAlphaController                block; 
         else if (blockType == "BSBoneLODExtraData")                BSBoneLODExtraData               block; 
         else if (blockType == "BSBound")                           BSBound                          block; 
- 
+        else if (blockType == "NiExtraData")                       NiExtraData                      block; 
+        else if (blockType == "BSClothExtraData")                  BSClothExtraData                 block; 
 
         else {
             WRITE_HEADER;

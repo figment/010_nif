@@ -49,6 +49,21 @@ int SizeShortString(ShortString &s) {
 }
 
 typedef struct {
+    ushort len;
+	string str;
+}  LongString <name="string",read=ReadLongString,size=SizeLongString>;
+
+string ReadLongString( LongString &s ) { 
+    local ushort len = ReadUShort();
+    return ReadString(startof(s)+2, len); 
+}
+int SizeLongString(LongString &s) { 
+    local ushort len = ReadUShort();
+    return len + 2; 
+}
+
+
+typedef struct {
     int len;
 	string str;
 } NiString  <read=ReadNiString ,size=SizeNiString ,comment=CommentNiString >;

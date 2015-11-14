@@ -42,7 +42,7 @@ typedef struct {
 
 
 typedef struct {
-    Ref data <comment="BSBehaviorGraphExtraData>">;
+    IndexString name;
     int unk;
     NiString root;
     NiString variableName;

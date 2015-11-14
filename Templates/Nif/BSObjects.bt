@@ -31,6 +31,71 @@ typedef struct {
  
 } BSDismemberSkinInstance;
  
+typedef struct {
+	/*! Number of Textures */
+	int numTextures;
+	/*!
+	 * Textures.
+	 *             0: Diffuse
+	 *             1: Normal/Gloss
+	 *             2: Glow(SLSF2_Glow_Map)/Skin/Hair/Rim light(SLSF2_Rim_Lighting)
+	 *             3: Height/Parallax
+	 *             4: Environment
+	 *             5: Environment Mask
+	 *             6: Subsurface for Multilayer Parallax
+	 *             7: Back Lighting Map (SLSF2_Back_Lighting)
+	 */
+	NiString  textures[numTextures]<optimize=false>;
+} BSShaderTextureSet <name="BSShaderTextureSet">;
+
+
+/*!
+ * Controls animation and collision.  Integer holds flags:
+ *         Bit 0 : enable havok, bAnimated(Skyrim)
+ *         Bit 1 : enable collision, bHavok(Skyrim)
+ *         Bit 2 : is skeleton nif?, bRagdoll(Skyrim)
+ *         Bit 3 : enable animation, bComplex(Skyrim)
+ *         Bit 4 : FlameNodes present, bAddon(Skyrim)
+ *         Bit 5 : EditorMarkers present
+ *         Bit 6 : bDynamic(Skyrim)
+ *         Bit 7 : bArticulated(Skyrim)
+ *         Bit 8 : bIKTarget(Skyrim)
+ *         Bit 9 : Unknown(Skyrim)
+ */
+typedef NiIntegerExtraData BSXFlags <name="BSXFlags">;
+
+typedef struct {
+    NiExtraData base;
+
+	/*! Name of the hkx file. */
+	IndexString behaviourGraphFile;
+	/*! Unknown, has to do with blending appended bones onto an actor. */
+	byte controlsBaseSkeleton;
+
+} BSBehaviorGraphExtraData <name="BSBehaviorGraphExtraData">;
+
+
+typedef struct {
+    NiFloatInterpController base;
+
+	/*! Which float variable in BSEffectShaderProperty to animate: */
+	EffectShaderControlledVariable typeOfControlledVariable;
+
+} BSEffectShaderPropertyFloatController <name="BSEffectShaderPropertyFloatController">;
+
+
+typedef struct {
+    NiFloatInterpController base;
+	/*! Which float variable in BSLightingShaderProperty to animate: */
+	LightingShaderControlledVariable typeOfControlledVariable;
+   
+} BSLightingShaderPropertyFloatController <name="BSLightingShaderPropertyFloatController">;
+
+typedef NiObject NiProperty <name="NiProperty">;
+
+
+
+
 
 typedef struct {
 
@@ -100,6 +165,8 @@ typedef struct {
 	if ( (skyrimShaderType == 5) ) {
 	    /*! Tints the base texture. Overridden by game settings. */
 	    Color3 skinTintColor;
+        if (isFallout4)
+            int unk;
 	};
 	if ( (skyrimShaderType == 6) ) {
 	    /*! Tints the base texture. Overridden by game settings. */
@@ -137,68 +204,6 @@ typedef struct {
 
 } BSLightingShaderProperty <name="BSLightingShaderProperty">;
 
-
-typedef struct {
-	/*! Number of Textures */
-	int numTextures;
-	/*!
-	 * Textures.
-	 *             0: Diffuse
-	 *             1: Normal/Gloss
-	 *             2: Glow(SLSF2_Glow_Map)/Skin/Hair/Rim light(SLSF2_Rim_Lighting)
-	 *             3: Height/Parallax
-	 *             4: Environment
-	 *             5: Environment Mask
-	 *             6: Subsurface for Multilayer Parallax
-	 *             7: Back Lighting Map (SLSF2_Back_Lighting)
-	 */
-	NiString  textures[numTextures]<optimize=false>;
-} BSShaderTextureSet <name="BSShaderTextureSet">;
-
-
-/*!
- * Controls animation and collision.  Integer holds flags:
- *         Bit 0 : enable havok, bAnimated(Skyrim)
- *         Bit 1 : enable collision, bHavok(Skyrim)
- *         Bit 2 : is skeleton nif?, bRagdoll(Skyrim)
- *         Bit 3 : enable animation, bComplex(Skyrim)
- *         Bit 4 : FlameNodes present, bAddon(Skyrim)
- *         Bit 5 : EditorMarkers present
- *         Bit 6 : bDynamic(Skyrim)
- *         Bit 7 : bArticulated(Skyrim)
- *         Bit 8 : bIKTarget(Skyrim)
- *         Bit 9 : Unknown(Skyrim)
- */
-typedef NiIntegerExtraData BSXFlags <name="BSXFlags">;
-
-typedef struct {
-    NiExtraData base;
-
-	/*! Name of the hkx file. */
-	IndexString behaviourGraphFile;
-	/*! Unknown, has to do with blending appended bones onto an actor. */
-	byte controlsBaseSkeleton;
-
-} BSBehaviorGraphExtraData <name="BSBehaviorGraphExtraData">;
-
-
-typedef struct {
-    NiFloatInterpController base;
-
-	/*! Which float variable in BSEffectShaderProperty to animate: */
-	EffectShaderControlledVariable typeOfControlledVariable;
-
-} BSEffectShaderPropertyFloatController <name="BSEffectShaderPropertyFloatController">;
-
-
-typedef struct {
-    NiFloatInterpController base;
-	/*! Which float variable in BSLightingShaderProperty to animate: */
-	LightingShaderControlledVariable typeOfControlledVariable;
-   
-} BSLightingShaderPropertyFloatController <name="BSLightingShaderPropertyFloatController">;
-
-typedef NiObject NiProperty <name="NiProperty">;
 
 typedef struct {
     NiProperty base;
