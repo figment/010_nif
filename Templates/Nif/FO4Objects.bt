@@ -26,7 +26,9 @@ typedef struct  {
     Ref boneData <comment="BSSkin::BoneData">;
     int numBones;
     Ref bones[numBones];
-    int unk;
+    int numWeights;
+    if (numWeights > 0)
+        Vector3 weights[numWeights];
 } BSSkin_Instance <name="BSSkin::Instance">;
 
 typedef struct {
@@ -66,10 +68,10 @@ typedef struct {
 typedef struct {
     IndexString name;
     byte unk;
-    int unk;
-    NiString target;
+    int numTargets;
+    if (numTargets > 0)
+        NiString target[numTargets]<optimize=false>;
 } BSConnectPoint_Children <name="BSConnectPoint::Children">;
-
 
 
 typedef struct {
@@ -82,3 +84,180 @@ typedef struct {
     int blobSize;
     char blob[blobSize] <format=hex>;
 } bhkRagdollSystem <name="bhkRagdollSystem">;
+
+typedef struct {
+    // NiExtraData base;
+    int blobSize;
+    char blob[blobSize] <format=hex>;
+} BSClothExtraData <name="BSClothExtraData">;
+
+typedef struct {
+    IndexString name;    
+    int numValues;
+    hfloat values[numValues];
+} BSPositionData;
+
+typedef struct {
+    int unk;
+    short unk;
+    short unk;
+    short unk;
+    int unk;
+} bhkNPCollisionObject <name="bhkNPCollisionObject">;
+
+//////////////////////////////////////////////////
+
+typedef struct {
+    hfloat x;
+    hfloat y;
+    hfloat z;
+    hfloat unk1 <comment="Possible Face Weight (or vert/uv dot product)">;
+    if (flag1 != 4) {
+        hfloat ux;
+        hfloat uy;
+    }
+    //3: Meshes\Actors\LibertyPrime\LibertyPrimeHSBodyLights.nif
+    //4: Meshes\Actors\SuperMutantBehemoth\SupterMutantBehemothSwan.nif
+
+    if (flag1 > 3) {
+        char unk[8];
+    }
+
+    if (flag1 == 6) // from parent
+        int vertColors <comment="Vertex Colors?">; 
+
+    if (flag1 == 7) {  // MaleEyesShade.nif
+        int unk;
+        int unk;
+    }
+
+    // in uniformF_Nopack these are all same for first 57 verts
+    if (flag1 >= 8) {
+        hfloat notable;
+        hfloat point;
+        hfloat point;
+        hfloat point;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+        byte unknown <format=hex>;
+    }
+    if (flag1 == 9) { // FemaleEyesAO.nif
+        int unk; 
+    }
+    if (flag1 == 10) {  // MaleEyes.nif
+        int unk;
+        int unk;
+    }
+
+
+} VERTDATA <name="Vertices">;
+
+
+typedef struct {
+    NiAVObject base;
+    float unknown[4];
+    Ref Skin;
+    Ref bsProperties[2]<comment="<NiProperty>">;
+    byte flag1 <comment="Vertex Data Type">;
+    byte flag2 <format=hex,comment="2">;
+    byte flag3 <format=hex,comment="43h">;
+    byte flag4 <format=hex, comment="0 or 50h">;
+    byte flag5 <format=hex>;
+    byte flag6 <format=hex,comment="B0h">;
+    byte flag7 <format=hex,comment="05h">;
+    byte flag8 <format=hex>;
+\\    int numTris;
+    ushort numVerts;
+    int triVertBlockSize;
+    if (triVertBlockSize > 0) {  // LibertyPrimeHeadShoot01.nif
+        VERTDATA verts[numVerts];
+        Triangle tris[numTris];
+    }
+} BSTriShape <name="BSTriShape">;
+
+typedef struct {
+    BSTriShape base <open=true>;
+    int numTris;
+
+    struct MysteryData
+    {
+        struct Temp1
+        {
+            int unknown;
+            int unknown;
+            int unknown;
+            int numStuff;
+            typedef struct {
+                int unknown;
+                int unknown;
+                int unknown;
+                int unknown;
+            } UnknownStuff; 
+            if (numStuff > 0)
+                UnknownStuff stuff[numStuff]<optimize=false>;
+        } ;
+        
+        struct Temp2
+        {
+            int index;
+            hfloat unk;
+            hfloat unk;
+            int numUnks;
+            if (numUnks > 0)
+                float unk2[numUnks];
+        } ;
+
+        int size1;
+        int size2;
+        Temp1 unk1[size1]<optimize=false>;
+
+        //// The evil check.  Basically if numStuff is non zero then the section below exists
+        //local bool second_stuff_flag = false;
+        //local int i;
+        //for (i=0;i<size;++i)
+        //    second_stuff_flag |= (unk1[i].numStuff>0);
+        if (size2 > size1)
+        {
+            int num1 <comment="Sizes again?">;
+            int num2 <comment="Sizes again?">;
+            int unk2[num1];
+            Temp2 unk3[num2]<optimize=false>;
+            LongString ssf;
+        }
+    };
+    MysteryData stuff;
+
+} BSSubIndexTriShape <name="BSSubIndexTriShape">;
+
+
+typedef struct {
+    BSTriShape base <open=true>;
+    int unk;
+    int unk;
+    int unk;
+} BSMeshLODTriShape;
+
+typedef struct {
+    #warning "TODO:  Finish parsing this"
+    IndexString name;
+    int flags1<format=hex>;
+    int flags2<format=hex>;
+    int unk;
+    int unk;
+    int unk;
+    int unk;
+    int unk;
+    int unk;
+    int unk;
+    int unk;
+    int unk;
+    int unk;
+
+    float unk;
+    int unk;
+    int unk;
+//    int numData;
+//    if (numData>0)
+//    Ref data[numData];
+} BSPackedCombinedSharedGeomDataExtra;

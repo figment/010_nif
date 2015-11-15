@@ -341,3 +341,325 @@ typedef struct {
 	    NiString data[numStrings]<optimize=false>;
     }
 } NiStringsExtraData;
+
+
+typedef struct {
+    NiAVObject base;
+
+if (!isFallout4) {
+
+    if ( info_version >= 0x0A01006A ) {
+	    /*! Turns effect on and off?  Switches list to list of unaffected nodes? */
+	    bool switchState;
+    }
+    if ( info_version <= 0x04000002 ) {
+	    /*! The number of affected nodes referenced. */
+	    unsigned int numAffectedNodeListPointers;
+        if (numAffectedNodeListPointers > 0) {
+	        /*!
+	         * This is probably the list of affected nodes. For some reason i do not know the
+	         * max exporter seems to write pointers instead of links. But it doesn't matter
+	         * because at least in version 4.0.0.2 the list is automagically updated by the
+	         * engine during the load stage.
+	         */
+	        unsigned int affectedNodeListPointers[numAffectedNodeListPointers];
+        }
+    }
+    if ( info_version >= 0x0A010000 ) {
+	    /*! The number of affected nodes referenced. */
+	    unsigned int numAffectedNodes;
+        if (numAffectedNodes > 0) {
+	        /*! The list of affected nodes? */
+	        Ref affectedNodes[numAffectedNodes]<comment="NiAVObject">;
+        }
+    }
+}
+} NiDynamicEffect;
+
+typedef struct {
+    NiDynamicEffect base;
+
+	/*! Dimmer. */
+	float dimmer;
+	/*! Ambient color. */
+	Color3 ambientColor;
+	/*! Diffuse color. */
+	Color3 diffuseColor;
+	/*! Specular color. */
+	Color3 specularColor;
+} NiLight;
+
+
+typedef struct {
+    NiLight base;
+  	/*! Constant Attenuation */
+	float constantAttenuation;
+	/*! Linear Attenuation */
+	float linearAttenuation;
+	/*! Quadratic Attenuation (see glLight) */
+	float quadraticAttenuation;
+} NiPointLight;
+
+local bool isNiPSysData = false;
+typedef struct {
+
+	if ( info_version >= 0x0A020000 ) {
+	    /*! Unknown identifier. Always 0. */
+	    int unknownInt;
+	};
+
+	/*! Number of vertices. */
+	unsigned short numVertices;
+if (1 == 0) {
+	if (!exists(isNiPSysData) || isNiPSysData) {
+	    /*! Number of vertices. */
+	    unsigned short numVertices;
+	};
+	if ( ((info_version < 0x14020007) || (info_userVersion < 11)) ) {
+		if (exists(isNiPSysData) && isNiPSysData) {
+	        /*! Number of vertices. */
+	        unsigned short numVertices;
+		};
+	};
+    if (!exists(numVertices))
+        local short numVertices = 0;
+
+	if ( ((info_version >= 0x14020007) && (info_userVersion >= 11)) ) {
+        if (exists(isNiPSysData) && isNiPSysData)
+	        /*! Bethesda uses this for max number of particles in NiPSysData. */
+	        unsigned short bsMaxVertices;
+	};
+}
+
+	if ( info_version >= 0x0A010000 ) {
+	    /*! Used with NiCollision objects when OBB or TRI is set. */
+	    byte keepFlags;
+	    /*! Unknown. */
+	    byte compressFlags;
+	};
+	/*! Is the vertex array present? (Always non-zero.) */
+	bool hasVertices;
+	if ( hasVertices && numVertices > 0) {
+	    /*! The mesh vertices. */
+	    Vector3 vertices[numVertices];
+	};
+	if ( ((info_version >= 0x0A000100) && (!((info_version >= 0x14020007) && (info_userVersion >= 11)))) ) {
+	    /*! Flag for tangents and bitangents in upper byte. Texture flags in lower byte. */
+	    unsigned short numUvSets;
+	};
+	if ( ((info_version >= 0x14020007) && (info_userVersion >= 11)) ) {
+	    /*!
+	     * Bethesda's version of this field for nif versions 20.2.0.7 and up. Only a single
+	     * bit denotes whether uv's are present. For example, see
+	     * meshes/architecture/megaton/megatonrampturn45sml.nif in Fallout 3.
+	     */
+	    unsigned short bsNumUvSets;
+        if (!exists(numUvSets))
+            local unsigned short numUvSets = 0;
+	};
+	if ( ( info_version >= 0x14020007 ) && ( info_userVersion == 12 ) ) {
+	    /*! Material */
+	    SkyrimHavokMaterial skyrimMaterial;
+	};
+	/*!
+	 * Do we have lighting normals? These are essential for proper lighting: if not
+	 * present, the model will only be influenced by ambient light.
+	 */
+	bool hasNormals;
+	if ( hasNormals ) {
+	    /*! The lighting normals. */
+	    Vector3 normals[numVertices];
+	};
+	if ( info_version >= 0x0A010000 ) {
+		if ( (hasNormals && ((numUvSets & 61440) || (bsNumUvSets & 61440))) ) {
+	        /*! Tangent vectors. */
+            Vector3 tangents[numVertices];
+	        /*! Bitangent vectors. */
+        	Vector3 bitangents[numVertices];
+		};
+	};
+
+	/*!
+	 * Center of the bounding box (smallest box that contains all vertices) of the
+	 * mesh.
+	 */
+	Vector3 center;
+	/*!
+	 * Radius of the mesh: maximal Euclidean distance between the center and all
+	 * vertices.
+	 */
+	float radius;
+
+	if ( ( info_version >= 0x14030009 ) && ( info_version <= 0x14030009 ) && ( info_userVersion == 131072 ) ) {
+	    /*! Unknown, always 0? */
+	    short unknown13Shorts[13];
+	};
+	/*!
+	 * Do we have vertex colors? These are usually used to fine-tune the lighting of
+	 * the model.
+	 * 
+	 *             Note: how vertex colors influence the model can be controlled by
+	 * having a NiVertexColorProperty object as a property child of the root node. If
+	 * this property object is not present, the vertex colors fine-tune lighting.
+	 * 
+	 *             Note 2: set to either 0 or 0xFFFFFFFF for NifTexture compatibility.
+	 */
+	bool hasVertexColors;
+	if ( hasVertexColors ) {
+	    /*! The vertex colors. */
+	    Color4 vertexColors[numVertices];
+	};
+	if ( info_version <= 0x04020200 ) {
+	    /*! Flag for tangents and bitangents in upper byte. Texture flags in lower byte. */
+	    unsigned short numUvSets;
+	};
+
+	if ( info_version <= 0x04000002 ) {
+	    /*!
+	     * Do we have UV coordinates?
+	     * 
+	     *             Note: for compatibility with NifTexture, set this value to either
+	     * 0x00000000 or 0xFFFFFFFF.
+	     */
+	    bool hasUv;
+	};
+    local int uvSetSize = ((numUvSets & 63) | (bsNumUvSets & 1));
+
+	/*!
+	 * The UV texture coordinates. They follow the OpenGL standard: some programs may
+	 * require you to flip the second coordinate.
+	 */
+    struct {
+        TexCoord v[numVertices];
+    } uvSets[uvSetSize];
+
+	if ( ( info_version >= 0x0A000100 ) && ( (info_userVersion < 12) ) ) {
+	    /*! Consistency Flags */
+	    ConsistencyType consistencyFlags;
+	};
+	if ( ( info_version >= 0x14000004 ) && ( (info_userVersion < 12) ) ) {
+	    /*! Unknown. */
+	    Ref additionalData<comment="AbstractAdditionalGeometryData">;
+	};
+
+} NiGeometryData;
+
+
+typedef struct {
+    NiAVObject base;
+
+	/*! Data index (NiTriShapeData/NiTriStripData). */
+	Ref data<comment="NiGeometryData">;
+    if ( info_version >= 0x0303000D ) {
+	    /*! Skin instance index. */
+	    Ref skinInstance<comment="NiSkinInstance">;
+    }
+    if ( info_version >= 0x14020007 ) {
+	    /*! Num Materials */
+	    unsigned int numMaterials;
+        if (numMaterials > 0){
+	        /*! Unknown string.  Shader? */
+	        IndexString materialName[numMaterials];
+	        /*! Unknown integer; often -1. (Is this a link, array index?) */
+	        int materialExtraData[numMaterials];
+        }
+	    /*! Active Material; often -1. (Is this a link, array index?) */
+	    int activeMaterial;
+    }
+    if ( ( info_version >= 0x0A000100 ) && ( info_version <= 0x14010003 ) ) {
+	    /*! Shader. */
+	    bool hasShader;
+        if (hasShader) {
+	        /*! The shader name. */
+	        IndexString shaderName;
+	        /*! Unknown value, usually -1. (Not a link) */
+	        int unknownInteger;
+        }
+    }
+    if ( info_userVersion == 1 ) {
+	    /*! Cyanide extension (only in version 10.2.0.0?). */
+	    byte unknownByte;
+    }
+    if ( ( info_version >= 0x0A040001 ) && ( info_version <= 0x0A040001 ) ) {
+	    /*! Unknown. */
+	    int unknownInteger2;
+    }
+if (isFallout4) {
+    Ref unk;
+} else {
+    if ( info_version >= 0x14020007 ) {
+	    /*! Dirty Flag? */
+	    bool dirtyFlag;
+    }
+}
+    if ( ( info_version >= 0x14020007 ) && ( info_userVersion == 12 ) ) {
+	    /*! Two property links, used by Bethesda. */
+	    Ref bsProperties[2]<comment="NiProperty">;
+    }
+} NiGeometry;
+
+
+typedef struct {
+    NiAVObject base;
+
+    if ( info_version >= 0x0A010000 ) {
+	    /*! Unknown. */
+	    unsigned short unknownShort;
+    }
+	/*! Frustrum left. */
+	float frustumLeft;
+	/*! Frustrum right. */
+	float frustumRight;
+	/*! Frustrum top. */
+	float frustumTop;
+	/*! Frustrum bottom. */
+	float frustumBottom;
+	/*! Frustrum near. */
+	float frustumNear;
+	/*! Frustrum far. */
+	float frustumFar;
+    if ( info_version >= 0x0A010000 ) {
+	    /*! Determines whether perspective is used.  Orthographic means no perspective. */
+	    bool useOrthographicProjection;
+    }
+	/*! Viewport left. */
+	float viewportLeft;
+	/*! Viewport right. */
+	float viewportRight;
+	/*! Viewport top. */
+	float viewportTop;
+	/*! Viewport bottom. */
+	float viewportBottom;
+	/*! Level of detail adjust. */
+	float lodAdjust;
+	/*! Unknown. */
+	Ref unknownLink<comment="NiObject">;
+	/*! Unknown.  Changing value crashes viewer. */
+	unsigned int unknownInt;
+    if ( info_version >= 0x04020100 ) {
+    	/*! Unknown.  Changing value crashes viewer. */
+	    unsigned int unknownInt2;
+    }
+    if ( info_version <= 0x03010000 ) {
+	    /*! Unknown. */
+	    unsigned int unknownInt3;
+    }
+
+} NiCamera;
+
+typedef struct {
+    NiNode base;
+	/*! The way the billboard will react to the camera. */
+	BillboardMode billboardMode;
+} NiBillboardNode;
+
+
+typedef struct {
+    NiNode base;
+    if ( info_version >= 0x0A010000 ) {
+	    /*! Flags */
+	    unsigned short unknownFlags1;
+    }
+	/*! Index? */
+	int unknownInt1;
+} NiSwitchNode;

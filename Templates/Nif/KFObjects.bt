@@ -14,6 +14,7 @@ LittleEndian();
 
 typedef unsigned char	byte;
 typedef unsigned char	bool;
+typedef struct {} NiKeyBasedInterpolator;
 
 typedef struct {
 	/*! Index of the next controller. */
@@ -616,3 +617,74 @@ typedef struct {
 	    Ref data<comment="NiFloatData">;
     }
 } NiAlphaController <name="NiAlphaController">;
+
+
+typedef struct {
+
+	/*! Number of keys in the array. */
+	unsigned int numKeys;
+    if (numKeys > 0){
+	    /*! The key type. */
+	    KeyType interpolation;
+	    /*! The keys. */
+	    KeyVector3 keys(interpolation)[numKeys]<optimize=false>;
+    }
+} KeyGroupVector3<name="KeyGroup<Vector3>">;
+
+typedef struct {
+	/*! The position keys. */
+	PosKeyGroupVector3 data;
+} NiPosData;
+
+typedef NiFloatInterpController NiLightRadiusController;
+typedef NiFloatInterpController NiLightDimmerController;
+typedef struct {
+    NiSingleInterpController base;
+    if ( info_version >= 0x0A010000 ) {
+	    /*! Selects which color to control. */
+	    TargetColor targetColor;
+    }
+    if ( info_version <= 0x0A010000 ) {
+	    /*! Material color controller data object index. Points to NiPosData. */
+	    Ref data <comment="NiPosData">;
+    }
+} NiPoint3InterpController;
+
+typedef NiPoint3InterpController NiLightColorController;
+
+typedef struct {
+    // NiKeyBasedInterpolator base;
+    /*! Value when posed?  Value at time 0? */
+	Vector3 point3Value;
+	/*! Reference to NiPosData. */
+	Ref data<comment="NiPosData">;
+} NiPoint3Interpolator;
+
+typedef NiBoolInterpolator NiBoolTimelineInterpolator;
+
+typedef struct {
+    NiBlendInterpolator base;
+
+	/*! The interpolated point? */
+	Vector3 pointValue;
+} NiBlendPoint3Interpolator;
+
+typedef struct {
+    NiKeyBasedInterpolator base;
+
+	/*! Unknown. */
+	unsigned short unknownShort;
+	/*! Unknown. */
+	unsigned int unknownInt;
+	/*! Unknown. */
+	float unknownFloat1;
+	/*! Unknown. */
+	float unknownFloat2;
+	/*! Unknown. Zero. */
+	unsigned short unknownShort2;
+	/*! Links to NiPosData. */
+	Ref posData<comment="NiPosData">;
+	/*! Links to NiFloatData. */
+	Ref floatData<comment="NiFloatData">;
+
+} NiPathInterpolator;

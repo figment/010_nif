@@ -220,7 +220,7 @@ typedef struct {
 	NiString sourceTexture;
 	/*! How to handle texture borders. */
 	TexClampMode textureClampMode : 4;
-	unsigned int textureClampMode : 28;
+	unsigned int flags : 28;
     if(!isFallout4) {
 	    /*! At this cosine of angle falloff will be equal to Falloff Start Opacity */
 	    float falloffStartAngle;
@@ -244,16 +244,17 @@ typedef struct {
     }
     if(isFallout4) {
         float unkdata [10];
-        NiString  emissiveTex;
-        NiString  diffuseTexture;
-        NiString  specularTexture;  
+        NiString  textures[4]<optimize=false>;
         float unk;
-        float unkdata2;      
         //unsigned int unk;  // not in PipboyDusty.nif  (probably based on flags)
         //unsigned int unk;  // not in PipboyDusty.nif (probably based on flags)
+// Meshes\AnimObjects\LibertyPrimeAnimObject.nif
+//Meshes\Actors\LibertyPrime\LibertyPrimeHeadShoot01.nif
     } 
 
 } BSEffectShaderProperty <name="BSEffectShaderProperty">;
+
+
 
 typedef struct {
     NiAlphaController base;
@@ -312,3 +313,390 @@ typedef struct {
 	float maximumDistance;
 
 } BSLagBoneController;
+
+
+typedef struct {
+    NiExtraData base;
+    int numFloats;
+    if ( numFloats > 0 )
+        float values[numFloats];
+} BSEyeCenterExtraData;
+
+typedef struct {
+    NiFloatInterpController base;
+	/*! Which color in BSLightingShaderProperty to animate: */
+	LightingShaderControlledColor typeOfControlledColor;
+
+} BSLightingShaderPropertyColorController;
+
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Unknown */
+	float uknownFloat1;
+	/*! Unknown */
+	float uknownFloat2;
+	/*! Unknown */
+	float uknownFloat3;
+	/*! Unknown */
+	float uknownFloat4;
+} BSPSysLODModifier;
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Unknown. */
+	unsigned int numFloats;
+    if (numFloats > 0) {
+	    /*! Unknown */
+	    float floats[numFloats];
+    }
+
+} BSPSysScaleModifier;
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Unknown */
+	float fadeInPercent;
+	/*! Unknown */
+	float fadeOutPercent;
+	/*! Unknown */
+	float color1EndPercent;
+	/*! Unknown */
+	float color1StartPercent;
+	/*! Unknown */
+	float color2EndPercent;
+	/*! Unknown */
+	float color2StartPercent;
+	/*! Colors */
+	Color4 colors[3];
+} BSPSysSimpleColorModifier;
+
+typedef struct {
+    NiPSysModifier base;
+
+	/*! Starting frame/position on atlas */
+	unsigned int startFrame;
+	/*! Random chance to start on a different frame? */
+	float startFrameFudge;
+	/*! Ending frame/position on atlas */
+	float endFrame;
+	/*! Frame to start looping */
+	float loopStartFrame;
+	/*! Unknown. */
+	float loopStartFrameFudge;
+	/*! Unknown */
+	float frameCount;
+	/*! Unknown */
+	float frameCountFudge;
+
+} BSPSysSubTexModifier;
+
+typedef struct {
+    NiPSysModifier base;
+	/*! The amount of force wind will have on particles. */
+	float strength;
+} BSWindModifier;
+
+
+typedef struct {
+    NiTimeController base;
+
+	/*! Frustrum field of view animation interpolater and data. */
+	Ref interpolator<comment="NiFloatInterpolator">;
+
+} BSFrustumFOVController;
+
+
+typedef struct {
+    NiFloatInterpController base;
+
+	/*! Which color in BSEffectShaderProperty to animate: */
+	EffectShaderControlledColor typeOfControlledColor;
+} BSEffectShaderPropertyColorController;
+
+typedef struct {
+    NiFloatInterpController base;
+/*! References interpolator for Mutation of strips */
+	Ref interpolator2_Mutation <comment="NiInterpolator">;
+	/*! Unknown */
+	Ref interpolator3 <comment="NiInterpolator">;
+	/*! Unknown */
+	Ref interpolator4 <comment="NiInterpolator">;
+	/*! Unknown */
+	Ref interpolator5 <comment="NiInterpolator">;
+	/*! Unknown */
+	Ref interpolator6 <comment="NiInterpolator">;
+	/*! Unknown */
+	Ref interpolator7 <comment="NiInterpolator">;
+	/*! Unknown */
+	Ref interpolator8 <comment="NiInterpolator">;
+	/*! References interpolator for Amplitutde control. 0=straight, 50=wide */
+	Ref interpolator9_ArcOffset <comment="NiInterpolator">;
+	/*! Unknown */
+	unsigned short unknownShort1;
+	/*! Unknown */
+	unsigned short unknownShort2;
+	/*! Unknown */
+	unsigned short unknownShort3;
+	/*! How far lightning will stretch to. */
+	float distanceWeight;
+	/*! Unknown */
+	float float2;
+	/*! How wide the bolt will be */
+	float stripWidth;
+	/*! Influences forking behavior */
+	float fork;
+	/*! Unknown */
+	float float5;
+	/*! Unknown */
+	byte byte1;
+	/*! Unknown */
+	byte byte2;
+	/*! Unknown */
+	byte byte3;
+	/*! Unknown, unsure if this is actually another interpolator link. */
+	Ref interpolator10_ <comment="NiInterpolator">;    
+} BSProceduralLightningController;
+
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Unknown */
+	unsigned int unknownInt1;
+	/*! Unknown */
+	float unknownFloat1;
+	/*! Unknown */
+	float unknownFloat2;
+	/*! Unknown */
+	float unknownFloat3;
+} BSPSysInheritVelocityModifier;
+
+typedef struct {
+    NiNode base;
+
+	/*! Unknown */
+	Vector4 alphaSortBound;
+	/*! Unknown */
+	byte isStaticBound;    
+} BSOrderedNode;
+
+
+typedef struct {
+    NiNode base;
+	/*! Unknown */
+	unsigned short maxEmitterObjects;
+	/*! Unknown */
+	int numParticleSystems;
+    if (numParticleSystems > 0)
+	    /*! Unknown */
+	    Ref particleSystems[numParticleSystems]<comment="NiAVObject">;
+}
+BSMasterParticleSystem;
+
+typedef struct {
+    NiPSysModifierCtlr base;
+    
+    if ( info_version <= 0x0A010000 ) {
+	    /*! This controller's data */
+    	Ref data<comment="NiPSysEmitterCtlrData">;
+    }
+    if ( info_version >= 0x0A020000 ) {
+	    /*! Links to a bool interpolator. Controls emitter's visibility status? */
+	    Ref visibilityInterpolator<comment="NiInterpolator">;
+    }
+	/*! Unknown */
+	short unknownShort1;
+	/*! Unknown */
+	int unknownInt1;
+
+} BSPSysMultiTargetEmitterCtlr;
+
+typedef struct {
+    NiNode base;
+
+	/*! Unknown */
+	byte unknownByte1;
+	/*! Unknown */
+	short unknownShort2;    
+} BSBlastNode;
+
+
+typedef NiNode BSLeafAnimNode;
+
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Unknown */
+	float unknownFloat1;
+	/*! Unknown */
+	float unknownFloat2;
+	/*! Unknown */
+	float unknownFloat3;
+	/*! Unknown */
+	float unknownFloat4;
+	/*! Unknown */
+	float unknownFloat5;
+	/*! Unknown */
+	float unknownFloat6;
+	/*! Unknown */
+	unsigned int unknownInt1;
+} BSPSysRecycleBoundModifier;
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Amount of blending? */
+	float damping;
+} BSParentVelocityModifier;
+
+typedef struct {
+    NiNode base;
+	/*! Unknown */
+	byte unknownByte1;
+	/*! Unknown */
+	short unknownShort2;
+} BSDamageStage;
+
+
+
+/*! Describes a furniture position? */
+struct FurniturePosition {
+	/*! Offset of furniture marker. */
+	Vector3 offset;
+    if ( (info_userVersion <= 11) ) {
+	    /*! Furniture marker orientation. */
+	    unsigned short orientation;
+	    /*!
+	     * Refers to a furnituremarkerxx.nif file. Always seems to be the same as Position
+	     * Ref 2.
+	     */
+	    byte positionRef1;
+	    /*!
+	     * Refers to a furnituremarkerxx.nif file. Always seems to be the same as Position
+	     * Ref 1.
+	     */
+	    byte positionRef2;
+    }
+    if ( ((info_version >= 0x14020007) && (info_userVersion >= 12)) ) {
+	    /*! Similar to Orientation, in float form. */
+	    float heading;
+	    /*! Unknown */
+	    AnimationType animationType;
+	    /*! Unknown/unused in nif? */
+	    FurnitureEntryPoints entryProperties;
+    }
+};
+
+typedef struct {
+    NiExtraData base;
+
+	/*! Number of positions. */
+	unsigned int numPositions;
+    if (numPositions > 0) {
+	    /*! Unknown. Probably has something to do with the furniture positions? */
+	    FurniturePosition positions[numPositions];
+    }
+} BSFurnitureMarker;
+
+typedef struct {
+    BSFurnitureMarker base;
+} BSFurnitureMarkerNode;
+
+typedef struct {
+	/*! Unknown. */
+	Ref data<comment="BSMultiBoundData">;
+} BSMultiBound;
+
+typedef struct {
+    NiNode base;
+
+	/*! Unknown. */
+	Ref multiBound<comment="BSMultiBound">;
+	/*! Unknown */
+	unsigned int unknownInt;    
+} BSMultiBoundNode;
+
+typedef struct {} BSMultiBoundData;
+
+typedef struct {
+    BSMultiBoundData base;
+
+	/*! Center of the box. */
+	Vector3 center;
+	/*! Size of the box along each axis. */
+	Vector3 size;
+	/*! Rotation of the bounding box. */
+	Matrix33 rotation;
+} BSMultiBoundOBB;
+
+typedef struct {
+    NiNode base;
+	/*! Unknown */
+	unsigned int numBones1;
+    if (numBones1 > 0) {
+	    /*! Unknown */
+	    Ref bones1[numBones1]<comment="NiNode">;
+    }
+	/*! Unknown */
+	unsigned int numBones2;
+    if (numBones2 > 0) {
+	    /*! Unknown */
+	    Ref bones[numBones2]<comment="NiNode">;
+    }
+} BSTreeNode;
+
+
+
+typedef struct {
+    NiProperty base;
+
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags1 shaderFlags1;
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags2 shaderFlags2;
+	/*!
+	 * Offset UVs. Seems to be unused, but it fits with the other Skyrim shader
+	 * properties.
+	 */
+	TexCoord uvOffset;
+	/*! Offset UV Scale to repeat tiling textures, see above. */
+	TexCoord uvScale;
+	/*! points to an external texture. */
+	NiString sourceTexture;
+	/*! Sky Object Type */
+	SkyObjectType skyObjectType;
+} BSSkyShaderProperty;
+
+
+typedef struct{
+    NiProperty base;
+
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags1 shaderFlags1;
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags2 shaderFlags2;
+	/*!
+	 * Offset UVs. Seems to be unused, but it fits with the other Skyrim shader
+	 * properties.
+	 */
+	TexCoord uvOffset;
+	/*! Offset UV Scale to repeat tiling textures, see above. */
+	TexCoord uvScale;
+	/*! Defines attributes for the water shader (will use SkyrimWaterShaderFlags) */
+	SkyrimWaterShaderFlags waterShaderFlags;
+	/*!
+	 * A bitflag, only the first/second bit controls water flow positive or negative
+	 * along UVs.
+	 */
+	byte waterDirection;
+	/*! Unknown, flag? */
+	unsigned short unknownShort3;
+}BSWaterShaderProperty;
+
+typedef struct {
+    BSMultiBoundData base;
+
+	/*! Position of the AABB's center */
+	Vector3 position;
+	/*! Extent of the AABB in all directions */
+	Vector3 extent;
+} BSMultiBoundAABB; 

@@ -22,136 +22,6 @@ LittleEndian();
 
 typedef unsigned char	byte;
 
-typedef struct {
-    hfloat x;
-    hfloat y;
-    hfloat z;
-    hfloat unk1 <comment="Possible Face Weight (or vert/uv dot product)">;
-    hfloat ux;
-    hfloat uy;
-    char unk[8];
-
-if (1 == 1) {
-    if (flag1 == 6) // from parent
-        int vertColors <comment="Vertex Colors?">; 
-
-    // in uniformF_Nopack these are all same for first 57 verts
-    if (flag1 >= 8) {
-        hfloat notable;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-    }
-    if (flag1 == 9) { // FemaleEyesAO.nif
-        int unk; 
-    }
-} else { // Caliente
-    if((flag6 & 0x1) !=0) {
-        uint packed1;
-        uint packed2;
-    } if((flag6 &0x4) !=0) {
-       hfloat notable;
-        byte unkdata2[10];
-    } if((flag6 &0x2) !=0) {
-        byte colorData[4];
-    }
-}
-
-
-} VERTDATA <name="Vertices">;
-
-
-typedef struct {
-    NiAVObject base;
-    float unknown[4];
-    Ref Skin;
-    Ref bsProperties[2]<comment="<NiProperty>">;
-    byte flag1 <comment="Vertex Data Type">;
-    byte flag2 <format=hex,comment="2">;
-    byte flag3 <format=hex,comment="43h">;
-    byte flag4 <format=hex, comment="0 or 50h">;
-    byte flag5 <format=hex>;
-    byte flag6 <format=hex,comment="B0h">;
-    byte flag7 <format=hex,comment="05h">;
-    byte flag8 <format=hex>;
-    int numTris;
-    ushort numVerts;
-    int triVertBlockSize;
-    VERTDATA verts[numVerts];
-    Triangle tris[numTris];
-} BSTriShape <name="BSTriShape">;
-
-typedef struct {
-    BSTriShape base <open=true>;
-    int numTris;
-
-    struct MysteryData
-    {
-        struct Temp1
-        {
-            int unknown;
-            int unknown;
-            int unknown;
-            int numStuff;
-            typedef struct {
-                int unknown;
-                int unknown;
-                int unknown;
-                int unknown;
-            } UnknownStuff; 
-            if (numStuff > 0)
-                UnknownStuff stuff[numStuff]<optimize=false>;
-        } ;
-        
-        struct Temp2
-        {
-            int index;
-            hfloat unk;
-            hfloat unk;
-            int numUnks;
-            if (numUnks > 0)
-                float unk2[numUnks];
-        } ;
-
-        int size1;
-        int size2;
-        Temp1 unk1[size1]<optimize=false>;
-
-        //// The evil check.  Basically if numStuff is non zero then the section below exists
-        //local bool second_stuff_flag = false;
-        //local int i;
-        //for (i=0;i<size;++i)
-        //    second_stuff_flag |= (unk1[i].numStuff>0);
-        if (size2 > size1)
-        {
-            int num1 <comment="Sizes again?">;
-            int num2 <comment="Sizes again?">;
-            int unk2[num1];
-            Temp2 unk3[num2]<optimize=false>;
-            LongString ssf;
-        }
-    };
-    MysteryData stuff;
-
-} BSSubIndexTriShape <name="BSSubIndexTriShape">;
-
-typedef struct {
-    int unk;
-    short unk;
-    short unk;
-    short unk;
-    int unk;
-} bhkNPCollisionObject <name="bhkNPCollisionObject">;
-
-typedef struct {
-    NiExtraData base;
-    int unk;
-} BSClothExtraData <name="BSClothExtraData">;
-
 
 if (!exists(error_count))
     local int error_count;
@@ -228,6 +98,78 @@ void LoadBlocks(int64 blockStart, Header& header) {
         else if (blockType == "NiStringsExtraData")                NiStringsExtraData               block; 
         else if (blockType == "BSValueNode")                       BSValueNode                      block; 
         else if (blockType == "BSLagBoneController")               BSLagBoneController              block; 
+        else if (blockType == "BSEyeCenterExtraData")              BSEyeCenterExtraData             block; 
+        else if (blockType == "NiPointLight")                      NiPointLight                     block; 
+        else if (blockType == "NiLightRadiusController")           NiLightRadiusController          block; 
+        else if (blockType == "NiLightDimmerController")           NiLightDimmerController          block; 
+        else if (blockType == "NiLightColorController")            NiLightColorController           block; 
+        else if (blockType == "NiPoint3Interpolator")              NiPoint3Interpolator             block; 
+        else if (blockType == "NiPosData")                         NiPosData                        block; 
+        else if (blockType == "BSLightingShaderPropertyColorController") BSLightingShaderPropertyColorController block; 
+        else if (blockType == "BSPSysLODModifier")                BSPSysLODModifier                block;
+        else if (blockType == "BSPSysScaleModifier")               BSPSysScaleModifier              block;
+        else if (blockType == "BSPSysSimpleColorModifier")         BSPSysSimpleColorModifier        block;
+        else if (blockType == "BSPSysSubTexModifier")              BSPSysSubTexModifier             block;
+        else if (blockType == "BSWindModifier")                    BSWindModifier                   block;
+        else if (blockType == "NiBoolTimelineInterpolator")        NiBoolTimelineInterpolator       block;
+        else if (blockType == "NiPSysAgeDeathModifier")            NiPSysAgeDeathModifier           block;
+        else if (blockType == "NiPSysBoundUpdateModifier")         NiPSysBoundUpdateModifier        block;
+        else if (blockType == "NiPSysCylinderEmitter")             NiPSysCylinderEmitter            block;
+        else if (blockType == "NiPSysData")                        NiPSysData                       block;
+        else if (blockType == "NiPSysDragModifier")                NiPSysDragModifier               block;
+        else if (blockType == "NiPSysEmitterCtlr")                 NiPSysEmitterCtlr                block;
+        else if (blockType == "NiPSysEmitterInitialRadiusCtlr")    NiPSysEmitterInitialRadiusCtlr   block;
+        else if (blockType == "NiPSysEmitterSpeedCtlr")            NiPSysEmitterSpeedCtlr           block;
+        else if (blockType == "NiPSysGravityModifier")             NiPSysGravityModifier            block;
+        else if (blockType == "NiPSysModifierActiveCtlr")          NiPSysModifierActiveCtlr         block;
+        else if (blockType == "NiPSysPositionModifier")            NiPSysPositionModifier           block;
+        else if (blockType == "NiPSysRotationModifier")            NiPSysRotationModifier           block;
+        else if (blockType == "NiPSysSpawnModifier")               NiPSysSpawnModifier              block;
+        else if (blockType == "NiPSysSphereEmitter")               NiPSysSphereEmitter              block;
+        else if (blockType == "NiPSysUpdateCtlr")                  NiPSysUpdateCtlr                 block;
+        else if (blockType == "NiParticleSystem")                  NiParticleSystem                 block;
+        else if (blockType == "NiCamera")                          NiCamera                         block;
+        else if (blockType == "BSFrustumFOVController")            BSFrustumFOVController           block;
+        else if (blockType == "NiPSysBoxEmitter")                  NiPSysBoxEmitter                 block;
+        else if (blockType == "NiBlendPoint3Interpolator")         NiBlendPoint3Interpolator        block;
+        else if (blockType == "BSProceduralLightningController")   BSProceduralLightningController  block;
+        else if (blockType == "BSEffectShaderPropertyColorController") BSEffectShaderPropertyColorController block;
+        else if (blockType == "BSPSysInheritVelocityModifier")    BSPSysInheritVelocityModifier    block;
+        else if (blockType == "BSPositionData")                   BSPositionData                   block;
+        else if (blockType == "NiBillboardNode")                  NiBillboardNode                  block;
+        else if (blockType == "NiPSysColliderManager")            NiPSysColliderManager            block;
+        else if (blockType == "NiPSysMeshEmitter")                NiPSysMeshEmitter                block;
+        else if (blockType == "NiPSysPlanarCollider")             NiPSysPlanarCollider             block;
+        else if (blockType == "NiPSysBombModifier")               NiPSysBombModifier               block;
+        else if (blockType == "BSOrderedNode")                    BSOrderedNode                    block;
+        else if (blockType == "BSMasterParticleSystem")           BSMasterParticleSystem           block;
+        else if (blockType == "BSPSysMultiTargetEmitterCtlr")     BSPSysMultiTargetEmitterCtlr     block;
+        else if (blockType == "NiPSysSphericalCollider")          NiPSysSphericalCollider          block;
+        else if (blockType == "NiPSysEmitterLifeSpanCtlr")        NiPSysEmitterLifeSpanCtlr        block;
+        else if (blockType == "NiPathInterpolator")               NiPathInterpolator               block;
+        else if (blockType == "NiPSysEmitterDeclinationVarCtlr")  NiPSysEmitterDeclinationVarCtlr  block;
+        else if (blockType == "NiPSysGravityStrengthCtlr")        NiPSysGravityStrengthCtlr        block;
+        else if (blockType == "BSMeshLODTriShape")                BSMeshLODTriShape                block;
+        else if (blockType == "BSBlastNode")                      BSBlastNode                      block;
+        else if (blockType == "BSLeafAnimNode")                   BSLeafAnimNode                   block;
+        else if (blockType == "BSPSysRecycleBoundModifier")       BSPSysRecycleBoundModifier       block;
+        else if (blockType == "BSParentVelocityModifier")         BSParentVelocityModifier         block;
+        else if (blockType == "NiPSysEmitterDeclinationCtlr")     NiPSysEmitterDeclinationCtlr     block;
+        else if (blockType == "NiPSysEmitterLifeSpanCtlr")        NiPSysEmitterLifeSpanCtlr        block;
+        else if (blockType == "NiPSysEmitterPlanarAngleCtlr")     NiPSysEmitterPlanarAngleCtlr     block;
+        else if (blockType == "NiPSysInitialRotSpeedVarCtlr")     NiPSysInitialRotSpeedVarCtlr     block;
+        else if (blockType == "NiPSysInitialRotSpeedCtlr")        NiPSysInitialRotSpeedCtlr        block;
+        else if (blockType == "BSDamageStage")                    BSDamageStage                    block;
+        else if (blockType == "BSFurnitureMarkerNode")            BSFurnitureMarkerNode            block;
+        else if (blockType == "BSMultiBoundOBB")                  BSMultiBoundOBB                  block;
+        else if (blockType == "BSMultiBound")                     BSMultiBound                     block;
+        else if (blockType == "BSMultiBoundNode")                 BSMultiBoundNode                 block;
+        else if (blockType == "NiSwitchNode")                     NiSwitchNode                     block;
+        else if (blockType == "BSTreeNode")                       BSTreeNode                       block;
+        else if (blockType == "BSPackedCombinedSharedGeomDataExtra") BSPackedCombinedSharedGeomDataExtra block;
+        else if (blockType == "BSSkyShaderProperty")              BSSkyShaderProperty              block;
+        else if (blockType == "BSWaterShaderProperty")            BSWaterShaderProperty            block;
+        else if (blockType == "BSMultiBoundAABB")                 BSMultiBoundAABB                 block;
 
         else {
             WRITE_HEADER;
@@ -256,4 +198,6 @@ void LoadBlocks(int64 blockStart, Header& header) {
     }
 }
 
+//DumpBlocks(FTell(), header);    
 LoadBlocks(FTell(), header);
+

@@ -1,0 +1,731 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+RequiresVersion( 6.0 );
+
+// Define the headers
+LittleEndian(); 
+
+typedef struct {
+
+	/*! The object name. */
+	IndexString name;
+	/*! Modifier ID in the particle modifier chain (always a multiple of 1000)? */
+	unsigned int order;
+	/*! NiParticleSystem parent of this modifier. */
+	Ptr target<comment="NiParticleSystem">;
+	/*! Whether the modifier is currently in effect?  Usually true. */
+	bool active;
+
+} NiPSysModifier;
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Unknown. */
+	bool spawnOnDeath;
+	/*! Link to NiPSysSpawnModifier object? */
+	Ref spawnModifier<comment="NiPSysSpawnModifier">;
+} NiPSysAgeDeathModifier;
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Unknown. */
+	unsigned short updateSkip;
+} NiPSysBoundUpdateModifier;
+
+typedef struct {
+    NiPSysModifier base;
+/*! Speed / Inertia of particle movement. */
+	float speed;
+	/*! Adds an amount of randomness to Speed. */
+	float speedVariation;
+	/*! Declination / First axis. */
+	float declination;
+	/*! Declination randomness / First axis. */
+	float declinationVariation;
+	/*! Planar Angle / Second axis. */
+	float planarAngle;
+	/*! Planar Angle randomness / Second axis . */
+	float planarAngleVariation;
+	/*! Defines color of a birthed particle. */
+	Color4 initialColor;
+	/*! Size of a birthed particle. */
+	float initialRadius;
+    if ( info_version >= 0x0A040001 ) {
+	    /*! Particle Radius randomness. */
+	    float radiusVariation;
+    }
+	/*! Duration until a particle dies. */
+	float lifeSpan;
+	/*! Adds randomness to Life Span. */
+	float lifeSpanVariation;
+
+} NiPSysEmitter;
+
+typedef struct {
+    NiPSysEmitter base;
+	/*! Node parent of this modifier? */
+	Ptr emitterObject<comment="NiNode">;
+} NiPSysVolumeEmitter;
+
+
+typedef struct {
+    NiPSysVolumeEmitter base;
+	/*! Radius of the cylinder shape. */
+	float radius;
+	/*! Height of the cylinders shape. */
+	float height;
+} NiPSysCylinderEmitter;
+
+
+typedef struct {
+    NiGeometryData base;
+
+    if ( info_version <= 0x04000002 ) {
+    /*! The maximum number of particles (matches the number of vertices). */
+	    unsigned short numParticles;
+    }
+    if ( info_version <= 0x0A000100 ) {
+	    /*! The particles' size. */
+	    float particleRadius;
+    }
+    if ( info_version >= 0x0A010000 ) {
+	    /*! Is the particle size array present? */
+	    bool hasRadii;
+        if (!((info_version >= 0x14020007) && (info_userVersion >= 11))) {
+            if (hasRadii && base.numVertices > 0){
+	            /*! The individual particel sizes. */
+	            float radii[base.numVertices];
+            }
+        }
+    }
+	/*!
+	 * The number of active particles at the time the system was saved. This is also
+	 * the number of valid entries in the following arrays.
+	 */
+	unsigned short numActive;
+	/*! Is the particle size array present? */
+	bool hasSizes;
+    if ( (!((info_version >= 0x14020007) && (info_userVersion >= 11))) ) {
+        if (hasSizes && base.numVertices > 0){
+	        /*! The individual particel sizes. */
+	        float sizes[base.numVertices];
+        }
+    }
+    if ( info_version >= 0x0A000100 ) {
+	    /*! Is the particle rotation array present? */
+	    bool hasRotations;
+        if ( (!((info_version >= 0x14020007) && (info_userVersion >= 11))) ) {
+            if (base.numVertices > 0) {
+	            /*! The individual particle rotations. */
+	            Quaternion rotations[base.numVertices];
+            }
+        }
+    }
+    if ( ((info_version >= 0x14020007) && (info_userVersion >= 12)) ) {
+	    /*! Unknown, probably a boolean. */
+	    byte unknownByte1;
+	    /*! Unknown */
+	    Ref unknownLink<comment="NiObject">;
+    }
+    if ( info_version >= 0x14000004 ) {
+	    /*! Are the angles of rotation present? */
+	    bool hasRotationAngles;
+        if (!((info_version >= 0x14020007) && (info_userVersion >= 11))) {
+            if (base.numVertices) {
+	            /*! Angles of rotation */
+    	        float rotationAngles[base.numVertices];
+            }
+        }
+    }
+    if ( info_version >= 0x14000004 ) {
+    	/*! Are axes of rotation present? */
+    	bool hasRotationAxes;
+        if (!((info_version >= 0x14020007) && (info_userVersion >= 11))) {
+            if ( base.numVertices) {
+	            /*! Unknown */
+	            Vector3 rotationAxes[base.numVertices];
+            }
+        }
+    }
+    if ( ((info_version >= 0x14020007) && (info_userVersion == 11)) ) {
+	    /*! if value is no, a single image rendered */
+	    bool hasUvQuadrants;
+	    /*!
+	     * 2,4,8,16,32,64 are potential values. If "Has" was no then this should be 256,
+	     * which represents a 16x16 framed image, which is invalid
+	     */
+	    byte numUvQuadrants;
+        if (numUvQuadrants > 0) {
+	        /*! Unknown. */
+	        Vector4 uvQuadrants[numUvQuadrants];
+        }
+    }
+    if ((info_version == 0x14020007) && (info_userVersion >= 11)) {
+	    /*! Unknown */
+	    byte unknownByte2;
+    }
+} NiParticlesData;
+
+typedef struct {
+    local unsigned ushort numVertices = 0;
+    NiParticlesData base;
+    if (exists(base.base.numVertices))
+        numVertices = base.base.numVertices;
+	/*! Is the particle rotation array present? */
+	bool hasRotations2;
+    if (numVertices > 0) {
+	    /*! The individual particle rotations. */
+	    Quaternion  rotations2[numVertices];
+    }
+} NiRotatingParticlesData;
+
+typedef struct {
+	/*! Unknown. */
+	Vector3 translation;
+    if ( info_version <= 0x0A040001 ) {
+	    /*! Unknown. */
+	    float unknownFloats1[3];
+    }
+	/*! Unknown. */
+	float unknownFloat1;
+	/*! Unknown. */
+	float unknownFloat2;
+	/*! Unknown. */
+	float unknownFloat3;
+	/*! Unknown. */
+	int unknownInt1;
+} ParticleDesc;
+
+
+// expand NiPSysData completely
+typedef struct {
+	if ( info_version >= 0x0A020000 ) {
+	    /*! Unknown identifier. Always 0. */
+	    int unknownInt;
+	};
+
+    local unsigned short numVertices = 0;
+	if ( ((info_version >= 0x14020007) && (info_userVersion >= 11)) ) {
+	    /*! Bethesda uses this for max number of particles in NiPSysData. */
+	    unsigned short bsMaxVertices;
+	};
+
+	if ( info_version >= 0x0A010000 ) {
+	    /*! Used with NiCollision objects when OBB or TRI is set. */
+	    byte keepFlags;
+	    /*! Unknown. */
+	    byte compressFlags;
+	};
+	/*! Is the vertex array present? (Always non-zero.) */
+	bool hasVertices;
+	if ( hasVertices && numVertices > 0) {
+	    /*! The mesh vertices. */
+	    Vector3 vertices[numVertices];
+	};
+	if ( ((info_version >= 0x0A000100) && (!((info_version >= 0x14020007) && (info_userVersion >= 11)))) ) {
+	    /*! Flag for tangents and bitangents in upper byte. Texture flags in lower byte. */
+	    unsigned short numUvSets;
+	};
+	if ( ((info_version >= 0x14020007) && (info_userVersion >= 11)) ) {
+	    /*!
+	     * Bethesda's version of this field for nif versions 20.2.0.7 and up. Only a single
+	     * bit denotes whether uv's are present. For example, see
+	     * meshes/architecture/megaton/megatonrampturn45sml.nif in Fallout 3.
+	     */
+	    unsigned short bsNumUvSets;
+        if (!exists(numUvSets))
+            local unsigned short numUvSets = 0;
+	};
+
+	/*!
+	 * Do we have lighting normals? These are essential for proper lighting: if not
+	 * present, the model will only be influenced by ambient light.
+	 */
+	bool hasNormals;
+	if ( hasNormals ) {
+	    /*! The lighting normals. */
+	    Vector3 normals[numVertices];
+	};
+	if ( info_version >= 0x0A010000 ) {
+		if ( (hasNormals && ((numUvSets & 61440) || (bsNumUvSets & 61440))) ) {
+	        /*! Tangent vectors. */
+            Vector3 tangents[numVertices];
+	        /*! Bitangent vectors. */
+        	Vector3 bitangents[numVertices];
+		};
+	};
+
+	/*!
+	 * Center of the bounding box (smallest box that contains all vertices) of the
+	 * mesh.
+	 */
+	Vector3 center;
+	/*!
+	 * Radius of the mesh: maximal Euclidean distance between the center and all
+	 * vertices.
+	 */
+	float radius;
+
+	if ( ( info_version >= 0x14030009 ) && ( info_version <= 0x14030009 ) && ( info_userVersion == 131072 ) ) {
+	    /*! Unknown, always 0? */
+	    short unknown13Shorts[13];
+	};
+	/*!
+	 * Do we have vertex colors? These are usually used to fine-tune the lighting of
+	 * the model.
+	 * 
+	 *             Note: how vertex colors influence the model can be controlled by
+	 * having a NiVertexColorProperty object as a property child of the root node. If
+	 * this property object is not present, the vertex colors fine-tune lighting.
+	 * 
+	 *             Note 2: set to either 0 or 0xFFFFFFFF for NifTexture compatibility.
+	 */
+	bool hasVertexColors;
+	if ( hasVertexColors ) {
+	    /*! The vertex colors. */
+	    Color4 vertexColors[numVertices];
+	};
+	if ( info_version <= 0x04020200 ) {
+	    /*! Flag for tangents and bitangents in upper byte. Texture flags in lower byte. */
+	    unsigned short numUvSets;
+	};
+
+	if ( info_version <= 0x04000002 ) {
+	    /*!
+	     * Do we have UV coordinates?
+	     * 
+	     *             Note: for compatibility with NifTexture, set this value to either
+	     * 0x00000000 or 0xFFFFFFFF.
+	     */
+	    bool hasUv;
+	};
+    local int uvSetSize = ((numUvSets & 63) | (bsNumUvSets & 1));
+
+	/*!
+	 * The UV texture coordinates. They follow the OpenGL standard: some programs may
+	 * require you to flip the second coordinate.
+	 */
+    struct {
+        TexCoord v[numVertices];
+    } uvSets[uvSetSize];
+
+	if ( ( info_version >= 0x0A000100 ) && ( (info_userVersion < 12) ) ) {
+	    /*! Consistency Flags */
+	    ConsistencyType consistencyFlags;
+	};
+	if ( ( info_version >= 0x14000004 ) && ( (info_userVersion < 12) ) ) {
+	    /*! Unknown. */
+	    Ref additionalData<comment="AbstractAdditionalGeometryData">;
+	};
+/////////////////////////////////////////
+    // NiParticlesData
+
+    if ( info_version <= 0x04000002 ) {
+    /*! The maximum number of particles (matches the number of vertices). */
+	    unsigned short numParticles;
+    }
+    if ( info_version <= 0x0A000100 ) {
+	    /*! The particles' size. */
+	    float particleRadius;
+    }
+    if ( info_version >= 0x0A010000 ) {
+	    /*! Is the particle size array present? */
+	    bool hasRadii;
+        if (!((info_version >= 0x14020007) && (info_userVersion >= 11))) {
+            if (hasRadii && numVertices > 0){
+	            /*! The individual particel sizes. */
+	            float radii[numVertices];
+            }
+        }
+    }
+	/*!
+	 * The number of active particles at the time the system was saved. This is also
+	 * the number of valid entries in the following arrays.
+	 */
+	unsigned short numActive;
+	/*! Is the particle size array present? */
+	bool hasSizes;
+    if ( (!((info_version >= 0x14020007) && (info_userVersion >= 11))) ) {
+        if (hasSizes && numVertices > 0){
+	        /*! The individual particel sizes. */
+	        float sizes[numVertices];
+        }
+    }
+    if ( info_version >= 0x0A000100 ) {
+	    /*! Is the particle rotation array present? */
+	    bool hasRotations;
+        if ( ( (!((info_version >= 0x14020007) && (info_userVersion >= 11))) ) ) {
+            if (numVertices > 0) {
+	            /*! The individual particle rotations. */
+	            Quaternion rotations[numVertices];
+            }
+        }
+    }
+    if ( ((info_version >= 0x14020007) && (info_userVersion >= 12)) ) {
+	    /*! Unknown, probably a boolean. */
+	    byte unknownByte1;
+	    /*! Unknown */
+	    Ref unknownLink<comment="NiObject">;
+    }
+    if ( info_version >= 0x14000004 ) {
+	    /*! Are the angles of rotation present? */
+	    bool hasRotationAngles;
+        if (!((info_version >= 0x14020007) && (info_userVersion >= 11))) {
+            if (numVertices) {
+	            /*! Angles of rotation */
+    	        float rotationAngles[numVertices];
+            }
+        }
+    }
+    if ( info_version >= 0x14000004 ) {
+    	/*! Are axes of rotation present? */
+    	bool hasRotationAxes;
+        if (!((info_version >= 0x14020007) && (info_userVersion >= 11))) {
+            if ( numVertices) {
+	            /*! Unknown */
+	            Vector3 rotationAxes[numVertices];
+            }
+        }
+    }
+    if ( ((info_version >= 0x14020007) && (info_userVersion == 11)) ) {
+	    /*! if value is no, a single image rendered */
+	    bool hasUvQuadrants;
+	    /*!
+	     * 2,4,8,16,32,64 are potential values. If "Has" was no then this should be 256,
+	     * which represents a 16x16 framed image, which is invalid
+	     */
+	    byte numUvQuadrants;
+        if (numUvQuadrants > 0) {
+	        /*! Unknown. */
+	        Vector4 uvQuadrants[numUvQuadrants];
+        }
+    }
+    if ((info_version == 0x14020007) && (info_userVersion >= 11)) {
+	    /*! Unknown */
+	    byte unknownByte2;
+    }
+/////////////////////////////////////////
+    if ( info_version <= 0x04020200 ) {
+        //NiRotatingParticlesData base;
+	    /*! Is the particle rotation array present? */
+	    bool hasRotations2;
+        if (numVertices > 0) {
+	        /*! The individual particle rotations. */
+	        Quaternion  rotations2[numVertices];
+        }
+    }
+/////////////////////////////////////////
+
+    if ( ( info_version >= 0x14000004 ) && ( (!((info_version >= 0x14020007) && (info_userVersion >= 11))) ) ) {
+	    /*! Unknown. */
+	    ParticleDesc particleDescriptions[numVertices];
+    }
+    if ( ( info_version >= 0x14000004 ) && ( (!((info_version >= 0x14020007) && (info_userVersion >= 11))) ) ) {
+	    /*! Has Rotation Speeds. */
+	    bool hasRotationSpeeds;
+	    /*! Rotation Speeds */
+	    float rotationSpeeds[numVertices];
+    }
+    if ( (!((info_version >= 0x14020007) && (info_userVersion == 11))) ) {
+	    /*! Num Added Particles */
+	    unsigned short numAddedParticles;
+	    /*! Added Particles Base */
+	    unsigned short addedParticlesBase;
+    }
+    if ( ((info_version >= 0x14020007) && (info_userVersion >= 12)) ) {
+	    /*! Boolean for Num Subtexture Offset UVs */
+	    bool hasSubtextureOffsetUvs;
+	    /*! How many quads to use in BSPSysSubTexModifier for texture atlasing */
+	    unsigned int numSubtextureOffsetUvs;
+	    /*! Sets aspect ratio for Subtexture Offset UV quads */
+	    float aspectRatio;
+        if (numSubtextureOffsetUvs > 0)
+	        /*! Defines UV offsets */
+	        Vector4 subtextureOffsetUvs[numSubtextureOffsetUvs];
+	    /*! Unknown */
+	    unsigned int unknownInt4;
+	    /*! Unknown */
+	    unsigned int unknownInt5;
+	    /*! Unknown */
+	    unsigned int unknownInt6;
+	    /*! Unknown */
+	    unsigned short maxBsParticles;
+	    /*! Unknown */
+	    byte unknownByte4;
+    }
+///////////////////////////////////////////////////
+
+} NiPSysData;
+
+typedef struct {
+    NiPSysModifier base;
+
+	/*! Parent reference. */
+	Ptr parent<comment="NiObject">;
+	/*! The drag axis. */
+	Vector3 dragAxis;
+	/*! Drag percentage. */
+	float percentage;
+	/*! The range. */
+	float range;
+	/*! The range falloff. */
+	float rangeFalloff;
+} NiPSysDragModifier;
+
+typedef struct {
+    NiSingleInterpController base;
+	/*! Refers to modifier object by its name? */
+	IndexString modifierName;
+} NiPSysModifierCtlr;
+
+typedef struct {
+    NiPSysModifierCtlr base;
+    if ( info_version <= 0x0A010000 ) {
+	    /*! This controller's data */
+	    Ref data <comment="NiPSysEmitterCtlrData">;
+    }
+    if ( info_version >= 0x0A020000 ) {
+	    /*! Links to a bool interpolator. Controls emitter's visibility status? */
+	    Ref visibilityInterpolator<comment="NiInterpolator">;
+    }
+} NiPSysEmitterCtlr;
+
+
+typedef NiPSysModifierCtlr NiPSysModifierFloatCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysEmitterInitialRadiusCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysEmitterSpeedCtlr;
+
+typedef struct {
+    NiPSysModifier base;
+    	/*! Refers to a NiNode for gravity location. */
+	Ptr gravityObject<comment="NiNode">;
+	/*! Orientation of gravity. */
+	Vector3 gravityAxis;
+	/*! Falloff range. */
+	float decay;
+	/*! The strength of gravity. */
+	float strength;
+	/*! Planar or Spherical type */
+	ForceType forceType;
+	/*! Adds a degree of randomness. */
+	float turbulence;
+	/*! Range for turbulence. */
+	float turbulenceScale;
+    if ( ( info_version >= 0x14020007 ) && ( (info_userVersion >= 11) ) ) {
+	    /*! Unknown */
+	    byte unknownByte;
+    }
+} NiPSysGravityModifier;
+
+typedef NiPSysModifierCtlr NiPSysModifierBoolCtlr;
+
+typedef struct {
+    NiPSysModifierBoolCtlr base;
+    if ( info_version <= 0x0A010000 ) {
+	    /*! This controller's data. */
+	    Ref data<comment="NiVisData">;
+    }
+
+} NiPSysModifierActiveCtlr;
+
+typedef NiPSysModifier NiPSysPositionModifier;
+
+typedef struct {
+    NiPSysModifier base;
+
+	/*! The initial speed of rotation. */
+	float initialRotationSpeed;
+    if ( info_version >= 0x14000004 ) {
+	    /*! Adds a ranged randomness to rotation speed. */
+	    float initialRotationSpeedVariation;
+	    /*! Sets the intial angle for particles to be birthed in. */
+	    float initialRotationAngle;
+	    /*! Adds a random range to Initial angle. */
+	    float initialRotationAngleVariation;
+	    /*! Unknown */
+	    bool randomRotSpeedSign;
+    }
+	/*! Unknown. */
+	bool randomInitialAxis;
+	/*! Unknown. */
+	Vector3 initialAxis;
+} NiPSysRotationModifier;
+
+
+typedef struct {
+    NiPSysModifier base;
+
+	/*! Unknown. */
+	unsigned short numSpawnGenerations;
+	/*! Unknown. */
+	float percentageSpawned;
+	/*! Unknown. */
+	unsigned short minNumToSpawn;
+	/*! Unknown. */
+	unsigned short maxNumToSpawn;
+	/*! Unknown. */
+	float spawnSpeedChaos;
+	/*! Unknown. */
+	float spawnDirChaos;
+	/*! Unknown. */
+	float lifeSpan;
+	/*! Unknown. */
+	float lifeSpanVariation;
+    if ( ( info_version >= 0x0A040001 ) && ( info_version <= 0x0A040001 ) ) {
+	    /*! Unknown */
+    	int unknownInt;
+    }
+} NiPSysSpawnModifier;
+
+typedef struct {
+    NiPSysVolumeEmitter base;
+
+	/*! The radius of the sphere shape */
+	float radius;
+} NiPSysSphereEmitter;
+
+typedef NiTimeController NiPSysUpdateCtlr;
+
+typedef NiGeometry NiParticles;
+
+typedef struct {
+    NiParticles base;
+    if ( (info_userVersion >= 12) ) {
+	    /*! Unknown */
+	    unsigned short unknownShort2;
+	    /*! Unknown */
+	    unsigned short unknownShort3;
+	    /*! Unknown */
+	    unsigned int unknownInt1;
+if (isFallout4) {
+    unsigned int unk;
+    unsigned int unk;
+    Ref data<comment="NiPSysData?">;
+}
+    }
+    if ( info_version >= 0x0A010000 ) {
+	    /*!
+	     * If true, Particles are birthed into world space.  If false, Particles are
+	     * birthed into object space.
+	     */
+	    bool worldSpace;
+	    /*! The number of modifier references. */
+	    unsigned int numModifiers;
+        if (numModifiers) {
+	        /*! The list of particle modifiers. */
+    	    Ref modifiers[numModifiers]<comment="NiPSysModifier">;
+        }
+    }
+} NiParticleSystem;
+
+typedef struct {
+    NiPSysVolumeEmitter base;
+    
+	/*! Defines the Width of the box area. */
+	float width;
+	/*! Defines the Height of the box area. */
+	float height;
+	/*! Defines the Depth of the box area. */
+	float depth;
+
+} NiPSysBoxEmitter;
+
+
+typedef struct {
+    NiPSysModifier base;
+	/*! Link to a NiPSysPlanarCollider or NiPSysSphericalCollider. */
+	Ref collider<comment="NiPSysCollider">;
+} NiPSysColliderManager;
+
+typedef struct {
+    NiPSysEmitter base;
+
+    /*! The number of references to emitter meshes that follow. */
+	unsigned int numEmitterMeshes;
+    if (numEmitterMeshes > 0) {
+	    /*! Links to meshes used for emitting. */
+	    Ref emitterMeshes[numEmitterMeshes]<comment="NiTriBasedGeom">;
+    }
+	/*! The way the particles get their initial direction and speed. */
+	VelocityType initialVelocityType;
+	/*! The parts of the mesh that the particles emit from. */
+	EmitFrom emissionType;
+	/*! The emission axis. */
+	Vector3 emissionAxis;
+} NiPSysMeshEmitter;
+
+
+typedef struct {
+	/*! Defines amount of bounce the collider object has. */
+	float bounce;
+	/*! Unknown. */
+	bool spawnOnCollide;
+	/*! Kill particles on impact if set to yes. */
+	bool dieOnCollide;
+	/*! Link to NiPSysSpawnModifier object? */
+	Ref spawnModifier<comment="NiPSysSpawnModifier">;
+	/*! Link to parent. */
+	Ptr parent<comment="NiObject">;
+	/*! The next collider. */
+	Ref nextCollider<comment="NiObject">;
+	/*!
+	 * Links to a NiNode that will define where in object space the collider is
+	 * located/oriented.
+	 */
+	Ptr colliderObject<comment="NiNode">;
+} NiPSysCollider;
+
+typedef struct {
+    NiPSysCollider base;
+
+	/*! Defines the width of the plane. */
+	float width;
+	/*! Defines the height of the plane. */
+	float height;
+	/*! Defines Orientation. */
+	Vector3 xAxis;
+	/*! Defines Orientation. */
+	Vector3 yAxis;
+} NiPSysPlanarCollider;
+
+typedef struct {
+    NiPSysModifier base;
+
+	/*! Link to a NiNode for bomb to function. */
+	Ptr bombObject<comment="NiNode">;
+	/*! Orientation of bomb object. */
+	Vector3 bombAxis;
+	/*! Falloff rate of the bomb object. */
+	float decay;
+	/*! DeltaV /  Strength? */
+	float deltaV;
+	/*! Decay type */
+	DecayType decayType;
+	/*! Shape/symmetry of the bomb object. */
+	SymmetryType symmetryType;
+
+} NiPSysBombModifier;
+
+typedef struct {
+    NiPSysCollider base;
+
+	/*! Defines the radius of the sphere object. */
+	float radius;
+   
+} NiPSysSphericalCollider;
+
+
+typedef NiPSysModifierFloatCtlr NiPSysEmitterLifeSpanCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysEmitterDeclinationVarCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysGravityStrengthCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysEmitterDeclinationCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysEmitterPlanarAngleCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysInitialRotSpeedVarCtlr;
+typedef NiPSysModifierFloatCtlr NiPSysInitialRotSpeedCtlr;

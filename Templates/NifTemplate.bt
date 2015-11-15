@@ -16,6 +16,7 @@ LittleEndian();
 #include "nif/basic.bt"
 #include "nif/objects.bt"
 #include "nif/kfobjects.bt"
+#include "nif/psysobjects.bt"
 #include "nif/bsobjects.bt"
 #include "nif/fo4objects.bt"
 
@@ -129,5 +130,4 @@ if (Stricmp(ext,".NIF") == 0) {
     // NifInfo version info used in decompiling
     local unsigned int info_version, info_userVersion, info_userVersion2;
     Header header;
- //   DumpBlocks(FTell(), header);    
 }
