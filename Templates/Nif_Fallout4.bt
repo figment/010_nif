@@ -135,7 +135,7 @@ typedef struct {
             LongString ssf;
         }
     };
-    MysteryData stuff <open=true>;
+    MysteryData stuff;
 
 } BSSubIndexTriShape <name="BSSubIndexTriShape">;
 
@@ -153,6 +153,8 @@ typedef struct {
 } BSClothExtraData <name="BSClothExtraData">;
 
 
+if (!exists(error_count))
+    local int error_count;
 
 
 local bool isFallout4 = false;
@@ -163,12 +165,12 @@ void LoadBlocks(int64 blockStart, Header& header) {
     local int block_idx, typeIdx;
     local int64 blockPos, blockSize, blockEnd;
     local string blockType;
-    local int skip_check, wrote_header, missing_check;
+    local int skip_check, wrote_header, missing_check, error_count;
     local int diff, curPos;
 
 #define WRITE_HEADER if (wrote_header == 0) { \
                 Warning("Errors"); \
-                Printf("\nErrors:\n"); \
+                Printf("\n%s\nErrors:\n", GetFileName()); \
                 wrote_header = 1; }
 
     wrote_header = 0;
@@ -222,11 +224,16 @@ void LoadBlocks(int64 blockStart, Header& header) {
         else if (blockType == "BSBound")                           BSBound                          block; 
         else if (blockType == "NiExtraData")                       NiExtraData                      block; 
         else if (blockType == "BSClothExtraData")                  BSClothExtraData                 block; 
+        else if (blockType == "NiBinaryExtraData")                 NiBinaryExtraData                block; 
+        else if (blockType == "NiStringsExtraData")                NiStringsExtraData               block; 
+        else if (blockType == "BSValueNode")                       BSValueNode                      block; 
+        else if (blockType == "BSLagBoneController")               BSLagBoneController              block; 
 
         else {
             WRITE_HEADER;
             Printf("%4d | %-50s | Missing\n", block_idx, blockType);
             skip_check = 1;
+            error_count = error_count + 1;
         }
 
         SetForeColor (cNone);
@@ -240,6 +247,7 @@ void LoadBlocks(int64 blockStart, Header& header) {
                 Printf("%4d | %-50s | %5d | %5d != %5d | %5d\n",
                  block_idx, blockType, blockPos, blockEnd, curPos, diff);
                 SetForeColor(cRed);
+                error_count = error_count + 1;
 
             }
         }

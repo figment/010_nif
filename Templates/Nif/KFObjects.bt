@@ -573,7 +573,7 @@ typedef struct {
 	    KeyIndexString textKeys[numTextKeys]<optimize=false,comment="Key<IndexString>">;
     }
     
-} NiTextKeyExtraData <comment="NiTextKeyExtraData">;
+} NiTextKeyExtraData <name="NiTextKeyExtraData">;
 
 
 typedef struct (KeyType type) {

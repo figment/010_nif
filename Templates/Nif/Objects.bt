@@ -319,3 +319,25 @@ typedef struct {
 	    AVObject objs[numObjs]<optimize=false>;
     }
 } NiDefaultAVObjectPalette <name="NiDefaultAVObjectPalette">;
+
+
+typedef struct {
+    NiExtraData base;
+	/*! The number of bytes in this array */
+	unsigned int dataSize;
+    if (dataSize > 0) {
+	    /*! The bytes which make up the array */
+	    byte data[dataSize];
+    }
+} NiBinaryExtraData;
+
+typedef struct {
+    NiExtraData base;
+
+	/*! Number of strings. */
+	unsigned int numStrings;
+    if (numStrings > 0) {
+	    /*! The strings. */
+	    NiString data[numStrings]<optimize=false>;
+    }
+} NiStringsExtraData;

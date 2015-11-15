@@ -40,10 +40,7 @@ typedef struct {
     } bones[numBones]<name="bones",optimize=false>;
 } BSSkin_BoneData <name="BSSkin::BoneData">;
 
-
 typedef struct {
-    IndexString name;
-    int unk;
     NiString root;
     NiString variableName;
     float unk;
@@ -57,6 +54,13 @@ typedef struct {
     float unk;
     float unk;
     float unk;
+} BSConnectPoint;
+
+typedef struct {
+    IndexString name;
+    int numConnectPoints;
+    if (numConnectPoints > 0)
+        BSConnectPoint connectPoints[numConnectPoints]<optimize=false>;
 } BSConnectPoint_Parents <name="BSConnectPoint::Parents">;
 
 typedef struct {

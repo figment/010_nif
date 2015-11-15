@@ -243,10 +243,11 @@ typedef struct {
 	    NiString greyscaleTexture;
     }
     if(isFallout4) {
-        float unkdata [11];
+        float unkdata [10];
         NiString  emissiveTex;
         NiString  diffuseTexture;
         NiString  specularTexture;  
+        float unk;
         float unkdata2;      
         //unsigned int unk;  // not in PipboyDusty.nif  (probably based on flags)
         //unsigned int unk;  // not in PipboyDusty.nif (probably based on flags)
@@ -289,3 +290,25 @@ typedef struct {
 	Vector3 dimensions;
 
 } BSBound <name="BSBound">;
+
+typedef struct {
+    NiNode base;
+
+	/*! Value */
+	int value;
+	/*! Unknown */
+	byte unknownByte;
+
+} BSValueNode;
+
+typedef struct {
+    NiTimeController base;
+
+	/*! How long it takes to rotate about an actor back to rest position. */
+	float linearVelocity;
+	/*! How the bone lags rotation */
+	float linearRotation;
+	/*! How far bone will tail an actor. */
+	float maximumDistance;
+
+} BSLagBoneController;

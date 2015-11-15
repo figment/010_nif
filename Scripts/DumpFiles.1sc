@@ -1,0 +1,38 @@
+//--------------------------------------
+//--- 010 Editor v6.0.3 Script File
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+void DumpFiles(char path[], char extn[])
+{
+    local int i;
+    local TFileList fl = FindFiles(path, extn);
+    local char buffer[];
+    local int index;
+    local string template = "C:\\Users\\User\\Documents\\SweetScape\\010 Templates\\Nif\\Nif_Fallout4.bt";
+
+    for( i = 0; i < fl.filecount; i++ )
+    {
+        Strcpy(buffer, path);
+        Strcat(buffer, "\\");
+        Strcat(buffer, fl.file[i].filename);
+
+        index = FileOpen(buffer, false, "", false);
+        RunTemplate(template, false);
+        FileSelect(index);
+        FileClose();
+    }
+    for( i = 0; i < fl.dircount; i++ )
+    {
+        Strcpy(buffer, path);
+        Strcat(buffer, "\\");
+        Strcat(buffer, fl.dir[i].dirname);
+        DumpFiles(buffer, extn);
+    } 
+}
+OutputPaneClear();
+DumpFiles("F:\\Temp\\Fallout4\\Meshes\\Actors", "*.nif");
