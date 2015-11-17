@@ -31,8 +31,9 @@ local bool isFallout4 = false;
 if (info_userVersion == 12 && info_userVersion2 == 130)
     isFallout4 = true;
 
+local int block_idx;
 void LoadBlocks(int64 blockStart, Header& header) {
-    local int block_idx, typeIdx;
+    local int typeIdx;
     local int64 blockPos, blockSize, blockEnd;
     local string blockType;
     local int skip_check, wrote_header, missing_check, error_count;

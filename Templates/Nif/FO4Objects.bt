@@ -106,50 +106,53 @@ typedef struct {
 } bhkNPCollisionObject <name="bhkNPCollisionObject">;
 
 //////////////////////////////////////////////////
-
 typedef struct {
     hfloat x;
     hfloat y;
     hfloat z;
     hfloat unk1 <comment="Possible Face Weight (or vert/uv dot product)">;
-    if (flag1 != 4) {
+
+    // 0 flags7 == 00000000
+    // 2 flags7 == 00000000
+    // 3 flags7 == 00000000
+    // 4 flags7 == 00000000 or 00000010
+    // 5 flags7 == 00000000 or 00000001
+    // 6 flags7 == 00000100 or 00000011
+    // 7 flags7 == 00000110
+    // 8 flasg7 == 00000101
+    // 9 flasg7 == 00000111
+    //10 flags7 == 00010001
+
+    // 0 Meshes\Actors\Vertibird\CharacterAssets\VbirdDeathExplosion.nif
+    // 2 Meshes\Terrain\Commonwealth\Commonwealth.4.24.52.BTR
+    // 3 Meshes\Actors\LibertyPrime\LibertyPrimeHSBodyLights.nif
+    // 4 Meshes\Actors\SuperMutantBehemoth\SupterMutantBehemothSwan.nif
+    // 5 Meshes\Actors\Vertibird\CharacterAssets\VbirdDeathExplosion.nif
+    // 6 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyesShade.nif
+    // 7 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyesShade.nif
+    // 8 Meshes\Actors\Character\CharacterAssets\Hair\Female\FemaleHands.nif
+    // 9 Meshes\Actors\Character\CharacterAssets\Hair\Female\FemaleHair05.nif
+    //10 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyes.nif
+
+    if (flag1 == 3)
+        int unk <format=hex>; // dont buy that these are vert colors yet or uvs
+    if (flag1 > 4) {
         hfloat ux;
         hfloat uy;
     }
-    //3: Meshes\Actors\LibertyPrime\LibertyPrimeHSBodyLights.nif
-    //4: Meshes\Actors\SuperMutantBehemoth\SupterMutantBehemothSwan.nif
-
-    if (flag1 > 3) {
-        char unk[8];
+    if (flag1 > 3 && flag1 != 6 && flag1 != 7) {
+        char normal[4];
+        char tangent[4];
     }
-
-    if (flag1 == 6) // from parent
-        int vertColors <comment="Vertex Colors?">; 
-
-    if (flag1 == 7) {  // MaleEyesShade.nif
-        int unk;
-        int unk;
-    }
-
-    // in uniformF_Nopack these are all same for first 57 verts
-    if (flag1 >= 8) {
-        hfloat notable;
-        hfloat point;
-        hfloat point;
-        hfloat point;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-        byte unknown <format=hex>;
-    }
-    if (flag1 == 9) { // FemaleEyesAO.nif
-        int unk; 
+    if (flag1 == 7 || flag1 == 9 || flag1 == 10) 
+        byte vertColors[4] <comment="Vertex Colors?">; 
+    if (flag1 >= 6) {
+        hfloat weighs[4];
+        byte bones[4];
     }
     if (flag1 == 10) {  // MaleEyes.nif
         int unk;
-        int unk;
     }
-
 
 } VERTDATA <name="Vertices">;
 
@@ -167,7 +170,21 @@ typedef struct {
     byte flag6 <format=hex,comment="B0h">;
     byte flag7 <format=hex,comment="05h">;
     byte flag8 <format=hex>;
-\\    int numTris;
+
+//    local bool diff=true;
+//    switch(flag1)
+//    {
+//        case  3: diff = (flag7 != 0x00); break;
+//        case  4: diff = (flag7 != 0x02); break;
+//        case  6: diff = (flag7 != 0x04); break;
+//        case  7: diff = (flag7 != 0x06); break;
+//        case  8: diff = (flag7 != 0x05); break;
+//        case  9: diff = (flag7 != 0x07); break;
+//        case 10: diff = (flag7 != 0x17); break;
+//    }
+//    if (diff) Printf("%-60s [%3d] flag1: %2d, flag7: %s\n", GetFileName(), block_idx, flag1, IntToBinaryStr(flag7));
+
+    int numTris;
     ushort numVerts;
     int triVertBlockSize;
     if (triVertBlockSize > 0) {  // LibertyPrimeHeadShoot01.nif
@@ -205,7 +222,7 @@ typedef struct {
             hfloat unk;
             int numUnks;
             if (numUnks > 0)
-                float unk2[numUnks];
+                float unk2[numUnks]<optimize=false>;
         } ;
 
         int size1;
@@ -239,7 +256,7 @@ typedef struct {
 } BSMeshLODTriShape;
 
 typedef struct {
-    #warning "TODO:  Finish parsing this"
+    // #warning "TODO:  Finish parsing this"
     IndexString name;
     int flags1<format=hex>;
     int flags2<format=hex>;
