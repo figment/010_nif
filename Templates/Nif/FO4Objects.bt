@@ -218,12 +218,12 @@ typedef struct {
             } Subshape; 
             if (numSubShapes > 0)
                 Subshape numSubShapes[numSubShapes]<optimize=false, name="Shape">;
-        } Subshapes <comment="Subshape">;
+        } Subshapes <name="Subshape">;
         
         struct Temp2
         {
             int index;
-            int unk<format=hex>;
+            SkyrimHavokMaterial unk<format=hex>;
             int numUnks;
             if (numUnks > 0)
                 float unk2[numUnks]<optimize=false>;
@@ -242,7 +242,7 @@ typedef struct {
         {
             int num1 <comment="Sizes again?">;
             int num2 <comment="Sizes again?">;
-            int id[num1]<comment="Matches index in subshape";
+            int ids[num1]<comment="Matches index in subshape">;
             Temp2 unk3[num2]<optimize=false>;
             LongString ssf;
         }

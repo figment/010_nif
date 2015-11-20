@@ -126,7 +126,7 @@ void DumpBlocks(int64 blockStart, Header& header) {
 }
 
 local string ext = FileNameGetExtension(GetFileName());
-if (Stricmp(ext,".NIF") == 0 || Stricmp(ext,".BTR") == 0) {
+if (Stricmp(ext,".NIF") == 0 || Stricmp(ext,".BTR") == 0 || Stricmp(ext,".BTO") == 0) {
     // NifInfo version info used in decompiling
     local unsigned int info_version, info_userVersion, info_userVersion2;
     Header header;
