@@ -129,7 +129,7 @@ typedef struct {
     // 5 Meshes\Actors\Vertibird\CharacterAssets\VbirdDeathExplosion.nif
     // 6 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyesShade.nif
     // 7 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyesShade.nif
-    // 8 Meshes\Actors\Character\CharacterAssets\Hair\Female\FemaleHands.nif
+    // 8 Meshes\Actors\Character\CharacterAssets\FemaleHands.nif
     // 9 Meshes\Actors\Character\CharacterAssets\Hair\Female\FemaleHair05.nif
     //10 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyes.nif
 
@@ -202,29 +202,28 @@ typedef struct {
     BSTriShape base <open=true>;
     int numTris;
 
-    struct MysteryData
+    struct Shapes
     {
-        struct Temp1
+        typedef struct 
         {
-            int unknown;
-            int unknown;
-            int unknown;
-            int numStuff;
+            int start<comment="Start of previous subshape = start(prev) * count(prev)*3">;
+            int count<comment="Count of faces?">;
+            int unknown<comment="Usually -1">;
+            int numSubShapes;
             typedef struct {
-                int unknown;
-                int unknown;
-                int unknown;
-                int unknown;
-            } UnknownStuff; 
-            if (numStuff > 0)
-                UnknownStuff stuff[numStuff]<optimize=false>;
-        } ;
+                int indexStart<comment="=start(Prev) + count(Prev)*3">;
+                int count <comment="count*3">;
+                int unknown<comment="Same for each Subshape, increases each block. Matches second block array">;
+                int unknown<comment="0">;
+            } Subshape; 
+            if (numSubShapes > 0)
+                Subshape numSubShapes[numSubShapes]<optimize=false, name="Shape">;
+        } Subshapes <comment="Subshape">;
         
         struct Temp2
         {
             int index;
-            hfloat unk;
-            hfloat unk;
+            int unk<format=hex>;
             int numUnks;
             if (numUnks > 0)
                 float unk2[numUnks]<optimize=false>;
@@ -232,7 +231,7 @@ typedef struct {
 
         int size1;
         int size2;
-        Temp1 unk1[size1]<optimize=false>;
+        Subshapes shape[size1]<optimize=false, name="Subshape">;
 
         //// The evil check.  Basically if numStuff is non zero then the section below exists
         //local bool second_stuff_flag = false;
@@ -243,12 +242,12 @@ typedef struct {
         {
             int num1 <comment="Sizes again?">;
             int num2 <comment="Sizes again?">;
-            int unk2[num1];
+            int id[num1]<comment="Matches index in subshape";
             Temp2 unk3[num2]<optimize=false>;
             LongString ssf;
         }
     };
-    MysteryData stuff;
+    Shapes stuff;
 
 } BSSubIndexTriShape <name="BSSubIndexTriShape">;
 
