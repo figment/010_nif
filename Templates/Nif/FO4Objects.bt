@@ -110,7 +110,6 @@ typedef struct {
     hfloat x;
     hfloat y;
     hfloat z;
-    hfloat unk1 <comment="Possible Face Weight (or vert/uv dot product)">;
 
     // 0 flags7 == 00000000
     // 2 flags7 == 00000000
@@ -134,19 +133,25 @@ typedef struct {
     // 9 Meshes\Actors\Character\CharacterAssets\Hair\Female\FemaleHair05.nif
     //10 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyes.nif
 
+    if (flag1 == 3 || flag1 ==6)
+        ushort unk <format=hex>; // Not dot product
+    else
+        hfloat unk1 <comment="Possible Face Weight (or vert/uv dot product)">;
+
     if (flag1 == 3)
         int unk <format=hex>; // dont buy that these are vert colors yet or uvs
+
     if (flag1 > 4) {
         hfloat ux;
         hfloat uy;
     }
-    if (flag1 > 3 && flag1 != 6 && flag1 != 7) {
+    if (flag1 > 3 && flag1 != 7) {
         char normal[4];
         char tangent[4];
     }
-    if (flag1 == 7 || flag1 == 9 || flag1 == 10) 
+    if (flag1 == 6 || flag1 == 7 || flag1 == 9 || flag1 == 10) 
         byte vertColors[4] <comment="Vertex Colors?">; 
-    if (flag1 >= 6) {
+    if (flag1 > 6) {
         hfloat weighs[4];
         byte bones[4];
     }
