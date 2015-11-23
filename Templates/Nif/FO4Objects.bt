@@ -133,30 +133,35 @@ typedef struct {
     // 9 Meshes\Actors\Character\CharacterAssets\Hair\Female\FemaleHair05.nif
     //10 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyes.nif
 
-    if (flag1 == 3 || flag1 ==6)
-        ushort unk <format=hex>; // Not dot product
-    else
-        hfloat unk1 <comment="Possible Face Weight (or vert/uv dot product)">;
+//        if (flag1 == 6 && unk == 0xFFFF) 
+//            Printf("%-60s [%3d] %2d, unk: %04x\n", GetFileName(), block_idx, flag1, unk);
 
-    if (flag1 == 3)
-        int unk <format=hex>; // dont buy that these are vert colors yet or uvs
-
-    if (flag1 > 4) {
+    if ((flag6 & 0x80) && (flag3 & 0x40)) {
+        hfloat bitangent_x <comment="Possible Face Weight (or vert/uv dot product)">;
+    } else {
+        ushort normal_nybble <format=hex>; // Not dot product        
+    }
+    if (flag6 & 0x20) {
         hfloat ux;
         hfloat uy;
     }
-    if (flag1 > 3 && flag1 != 7) {
-        char normal[4];
-        char tangent[4];
+    if (flag6 & 0x80) {
+        ByteVector3 normal;
+        char bitangent_y;
     }
-    if (flag1 == 6 || flag1 == 7 || flag1 == 9 || flag1 == 10) 
-        byte vertColors[4] <comment="Vertex Colors?">; 
-    if (flag1 > 6) {
-        hfloat weighs[4];
+    if (flag3 & 0x40) {
+        ByteVector3 tangent;
+        char bitangent_z;
+    }
+    if (flag7 & 0x02) 
+        ByteVector4 vertColors; 
+
+    if (flag7 & 0x04) {
+        hfloat weights[4];
         byte bones[4];
     }
-    if (flag1 == 10) {  // MaleEyes.nif
-        int unk;
+    if (flag7 & 0x10) {  // MaleEyes.nif
+        int unk2;
     }
 
 } VERTDATA <name="Vertices">;
@@ -188,6 +193,12 @@ typedef struct {
 //        case 10: diff = (flag7 != 0x17); break;
 //    }
 //    if (diff) Printf("%-60s [%3d] flag1: %2d, flag7: %s\n", GetFileName(), block_idx, flag1, IntToBinaryStr(flag7));
+//    Printf("%-80s [%3d] %2d: %02x %02x %02x %02x | %02x %02x %02x %02x | %s %s %s %s | %s %s %s %s\n", 
+//        GetFileName(), block_idx, flag1,
+//        flag1, flag2, flag3, flag4, flag5, flag6, flag7, flag8,
+//        IntToBinaryStr(flag1), IntToBinaryStr(flag2), IntToBinaryStr(flag3), IntToBinaryStr(flag4), 
+//        IntToBinaryStr(flag5), IntToBinaryStr(flag6), IntToBinaryStr(flag7), IntToBinaryStr(flag8)
+//    );
 
     int numTris;
     ushort numVerts;
