@@ -1,0 +1,112 @@
+//--------------------------------------
+//--- 010 Editor v6.0.3 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+//#include "nif/enums.bt"
+//#include "nif/basic.bt"
+typedef byte bool;
+
+typedef struct
+{
+    char Signature[4];
+    uint Version;
+} MaterialHeader;
+
+typedef struct
+{
+    int TileU:1;
+    int TileV:1;
+    float UOffset;
+    float VOffset;
+    float UScale;
+    float VScale;
+    float Alpha;
+    byte AlphaMode;
+    uint AlphaFlag1;
+    uint AlphaFlag1;
+    char AlphaTestRef;
+    bool AlphaTest;
+    bool ZBufferWrite;
+    bool ZBufferTest;
+    bool ScreenSpaceReflections;
+    bool WetnessControlScreenSpaceReflections;
+    bool Decal;
+    bool TwoSided;
+    bool DecalNoFade;
+    bool NonOccluder;
+    bool Refraction;
+    bool RefractionFalloff;
+
+    float RefractionPower;
+    bool EnvironmentMapping;
+    float EnvironmentMappingMaskScale;
+    bool GrayscaleToPaletteColor;
+} MaterialFile;
+
+typedef struct
+{
+    MaterialFile mtl;
+    NiString DiffuseTexture;
+    NiString NormalTexture;
+    NiString SmoothSpecTexture;
+    NiString GreyscaleTexture;
+    NiString EnvmapTexture;
+    NiString GlowTexture;
+    NiString InnerLayerTexture;
+    NiString WrinklesTexture;
+    NiString DisplacementTexture;
+    bool EnableEditorAlphaRef;
+    bool RimLighting;
+    float RimPower;
+    float BackLightPower;
+    bool SubsurfaceLighting;
+    float SubsurfaceLightingRolloff;
+    bool SpecularEnabled;
+    Color3 SpecularColor<name="SpecularColor">;
+    float SpecularMult;
+    float Smoothness;
+    float FresnelPower;
+    float WetnessControlSpecScale;
+    float WetnessControlSpecPowerScale;
+    float WetnessControlSpecMinvar;
+    float WetnessControlEnvMapScale;
+    float WetnessControlFresnelPower;
+    float WetnessControlMetalness;
+
+    NiString RootMaterialPath;
+    bool AnisoLighting;
+    bool EmitEnabled;
+    if( EmitEnabled)
+        Color3 EmittanceColor <name="EmittanceColor">;
+    float EmittanceMult;
+    bool ModelSpaceNormals;
+    bool ExternalEmittance;
+    bool BackLighting;
+    bool ReceiveShadows;
+    bool HideSecret;
+    bool CastShadows;
+    bool DissolveFade;
+    bool AssumeShadowmask;
+    bool Glowmap;
+    bool EnvironmentMappingWindow;
+    bool EnvironmentMappingEye;
+    bool Hair;
+    Color3 HairTintColor<name="HairTintColor">;
+    bool Tree;
+    bool Facegen;
+    bool SkinTint;
+    bool Tessellate;
+    float DisplacementTextureBias;
+    float DisplacementTextureScale;
+    float TessellationPNScale;
+    float TessellationBaseFactor;
+    float TessellationFadeDistance;
+    float GrayscaleToPaletteScale;
+    if (header.Version >= 1)
+        bool SkewSpecularAlpha;    
+} BGSMFile;

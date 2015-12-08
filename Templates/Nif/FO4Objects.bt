@@ -25,11 +25,15 @@ typedef struct  {
     int unk;
     Ref boneData <comment="BSSkin::BoneData">;
     int numBones;
-    Ref bones[numBones];
+    Ref bones[numBones] <comment=CommentSkinBone>;
     int numWeights;
     if (numWeights > 0)
         Vector3 weights[numWeights];
 } BSSkin_Instance <name="BSSkin::Instance">;
+
+string CommentSkinBone(Ref& ref) {
+    return CommentNiNode(block[ref]);
+}
 
 typedef struct {
     uint numBones;
@@ -45,17 +49,9 @@ typedef struct {
 typedef struct {
     NiString root;
     NiString variableName;
-    float unk;
-    unsigned short unk <format=hex>;
-    unsigned short unk <format=hex>;
-    unsigned short unk <format=hex>;
-    unsigned short unk <format=hex>;
-    unsigned short unk <format=hex>;
-    unsigned short unk <format=hex>;
-    float unk;
-    float unk;
-    float unk;
-    float unk;
+    Quaternion Rotation;
+    Vector3 Translation;
+    float Scale;
 } BSConnectPoint;
 
 typedef struct {
@@ -204,63 +200,72 @@ typedef struct {
     ushort numVerts;
     int triVertBlockSize;
     if (triVertBlockSize > 0) {  // LibertyPrimeHeadShoot01.nif
-        VERTDATA verts[numVerts];
+        local int vertidx;
+        for (vertidx=0;vertidx<numVerts;++vertidx)
+            VERTDATA verts;
+        //VERTDATA verts[numVerts]<optimize=false>;
         Triangle tris[numTris];
     }
-} BSTriShape <name="BSTriShape">;
+} BSTriShape <name="BSTriShape", comment=CommentBSTriShape>;
+
+string CommentBSTriShape(BSTriShape& obj) {
+    return  CommentNiAVObject(obj.base);
+}
+
 
 typedef struct {
     BSTriShape base <open=true>;
     int numTris;
 
-    struct Shapes
+    typedef struct 
     {
-        typedef struct 
-        {
-            int start<comment="Start of previous subshape = start(prev) * count(prev)*3">;
-            int count<comment="Count of faces?">;
-            int unknown<comment="Usually -1">;
-            int numSubShapes;
-            typedef struct {
-                int indexStart<comment="=start(Prev) + count(Prev)*3">;
-                int count <comment="count*3">;
-                int unknown<comment="Same for each Subshape, increases each block. Matches second block array">;
-                int unknown<comment="0">;
-            } Subshape; 
-            if (numSubShapes > 0)
-                Subshape numSubShapes[numSubShapes]<optimize=false, name="Shape">;
-        } Subshapes <name="Subshape">;
-        
-        struct Temp2
-        {
-            int index;
-            SkyrimHavokMaterial unk<format=hex>;
-            int numUnks;
-            if (numUnks > 0)
-                float unk2[numUnks]<optimize=false>;
-        } ;
+        int start<comment="Start of previous subshape = start(prev) * count(prev)*3">;
+        int count<comment="Count of faces?">;
+        int unknown<comment="Usually -1">;
+//if (unknown != -1)
+//Printf("%-120s [%3d] %-30s %-5d %-5d %-3d\n", 
+//    GetFileName(), block_idx, CommentBSTriShape(base), start, count, unknown
+//);
 
-        int size1;
-        int size2;
-        Subshapes shape[size1]<optimize=false, name="Subshape">;
+        int numSubSegments;
+        typedef struct {
+            int indexStart<comment="=start(Prev) + count(Prev)*3">;
+            int count <comment="count*3">;
+            int unknown<comment="Same for each Subshape, increases each block. Matches second block array">;
+            int unknown<comment="0">;
+        } BSSITSSubSegment; 
+        if (numSubSegments > 0)
+            BSSITSSubSegment numSubSegment[numSubSegments]<name="SubSegment">;
+    } BSSITSSegment;
+    
+    struct BSSIMaterial
+    {
+        int bodyPartType;
+        int materialHash<format=hex>;
+        int numUnks;
+        if (numUnks > 0)
+            float unk2[numUnks];
+    } ;
 
-        //// The evil check.  Basically if numStuff is non zero then the section below exists
-        //local bool second_stuff_flag = false;
-        //local int i;
-        //for (i=0;i<size;++i)
-        //    second_stuff_flag |= (unk1[i].numStuff>0);
-        if (size2 > size1)
-        {
-            int num1 <comment="Sizes again?">;
-            int num2 <comment="Sizes again?">;
-            int ids[num1]<comment="Matches index in subshape">;
-            Temp2 unk3[num2]<optimize=false>;
-            LongString ssf;
-        }
+    struct BSSIMaterialSection
+    {
+        int numSegments <comment="Sizes again?">;
+        int numMaterials <comment="Sizes again?">;
+        int emptyMaterials[numSegments]<comment="Matches index in subshape">;
+        BSSIMaterial materials[numMaterials]<name="Material",optimize=false>;
+        LongString ssf;
     };
-    Shapes stuff;
+    int numSegments;
+    int numMaterials;
+    BSSITSSegment segments[numSegments]<optimize=false, name="Subshape">;
+    if (numMaterials > numSegments)
+        BSSIMaterialSection materialSections;
 
-} BSSubIndexTriShape <name="BSSubIndexTriShape">;
+} BSSubIndexTriShape <name="BSSubIndexTriShape",comment=CommentBSSubIndexTriShape>;
+
+string CommentBSSubIndexTriShape(BSSubIndexTriShape& obj) {
+    return  CommentBSTriShape(obj.base);
+}
 
 
 typedef struct {

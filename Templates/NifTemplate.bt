@@ -19,6 +19,7 @@ LittleEndian();
 #include "nif/psysobjects.bt"
 #include "nif/bsobjects.bt"
 #include "nif/fo4objects.bt"
+#include "nif/fo4materials.bt"
 
 typedef struct {
     if ( info_version <= 0x0A000102 )
@@ -131,3 +132,9 @@ if (Stricmp(ext,".NIF") == 0 || Stricmp(ext,".BTR") == 0 || Stricmp(ext,".BTO") 
     local unsigned int info_version, info_userVersion, info_userVersion2;
     Header header;
 }
+else if (Stricmp(ext,".BGSM") == 0 ) {
+    MaterialHeader header;
+    if (header.Signature == "BGSM")
+        BGSMFile bgsm;
+}
+

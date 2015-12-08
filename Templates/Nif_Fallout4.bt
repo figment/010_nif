@@ -28,7 +28,7 @@ if (!exists(error_count))
 
 
 local bool isFallout4 = false;
-if (info_userVersion == 12 && info_userVersion2 == 130)
+if (exists(info_userVersion) && info_userVersion == 12 && info_userVersion2 == 130)
     isFallout4 = true;
 
 local int block_idx;
@@ -53,11 +53,12 @@ void LoadBlocks(int64 blockStart, Header& header) {
         blockType = ReadNiString(header.blockTypes[typeIdx]);
         blockEnd = blockPos + blockSize;
 
-        // temporary hack
+         // temporary hack
         //if (blockType != "BSTriShape" && blockType != "BSSubIndexTriShape" &&  blockType != "BSMeshLODTriShape") {
+        //if (blockType != "BSSubIndexTriShape") {
         //    blockPos = blockEnd;
         //    continue;
-        //}
+       // }
 
              if (blockType == "NiNode")                                  NiNode                           block<hidden=true>;
         else if (blockType == "NiAlphaController")                       NiAlphaController                block; 
@@ -204,6 +205,14 @@ void LoadBlocks(int64 blockStart, Header& header) {
     }
 }
 
-//DumpBlocks(FTell(), header);    
-LoadBlocks(FTell(), header);
+if (Stricmp(ext,".NIF") == 0 || Stricmp(ext,".BTR") == 0 || Stricmp(ext,".BTO") == 0) {
+    //DumpBlocks(FTell(), header);    
+    LoadBlocks(FTell(), header);
+}
+else if (Stricmp(ext,".BGSM") == 0 ) {
+    if (FEof() == 0) {
+        Warning("Errors");
+        Printf("\n%s not fully parsed\n", GetFileName());
+    }
+}
 

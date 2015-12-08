@@ -1,0 +1,16 @@
+//--------------------------------------
+//--- 010 Editor v6.0.3 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+#include "nif/enums.bt"
+#include "nif/basic.bt"
+#include "nif/fo4materials.bt"
+
+MaterialHeader hdr;
+if (hdr.Signature == "BGSM")
+    BGSMFile bgsm;
+

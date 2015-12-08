@@ -202,7 +202,12 @@ typedef struct {
 	}
    
 
-} BSLightingShaderProperty <name="BSLightingShaderProperty">;
+} BSLightingShaderProperty <name="BSLightingShaderProperty", comment=CommentBSLightingShaderProperty>;
+
+string CommentBSLightingShaderProperty(BSLightingShaderProperty& value) {
+    return CommentNiObject(value.base);
+}
+
 
 
 typedef struct {
