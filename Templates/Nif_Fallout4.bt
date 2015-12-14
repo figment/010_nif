@@ -44,6 +44,19 @@ void LoadBlocks(int64 blockStart, Header& header) {
                 Printf("\n%s\nErrors:\n", GetFileName()); \
                 wrote_header = 1; }
 
+// ------- Begin Type Check  -------
+    diff = 0;
+    for (typeIdx=0; typeIdx<header.numBlockTypes; ++typeIdx) {
+        blockType =  ReadNiString(header.blockTypes[typeIdx]);
+        if (blockType == "BSTriShape") {
+            diff = 1;
+            break;
+        }
+    }
+//    if (diff == 0) return;
+    diff = 0;
+// ------- End Type Check  -------
+
     wrote_header = 0;
     blockPos = blockStart;
     for (block_idx=0; block_idx<header.numBlocks; ++block_idx) {
@@ -55,10 +68,11 @@ void LoadBlocks(int64 blockStart, Header& header) {
 
          // temporary hack
         //if (blockType != "BSTriShape" && blockType != "BSSubIndexTriShape" &&  blockType != "BSMeshLODTriShape") {
-        //if (blockType != "BSSubIndexTriShape") {
-        //    blockPos = blockEnd;
-        //    continue;
-       // }
+//        if (blockType != "BSTriShape") {
+//            blockPos = blockEnd;
+//            continue;
+//        }
+
 
              if (blockType == "NiNode")                                  NiNode                           block<hidden=true>;
         else if (blockType == "NiAlphaController")                       NiAlphaController                block; 

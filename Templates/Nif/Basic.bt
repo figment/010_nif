@@ -136,7 +136,7 @@ typedef int Ptr;
 typedef struct  {
 	float u; /*!< The U value in this coordinate pair. */ 
 	float v; /*!< The V value in this coordinate pair. */ 
-} TexCoord <name="TexCoord">;
+} TexCoord;
 
 string CommentTexCoord(TexCoord &t) {
     local char buffer[32];
@@ -175,7 +175,7 @@ typedef struct {
 	float r; /*!< The red component of this color.  Should be between 0.0f and 1.0f. */ 
 	float g; /*!< The green component of this color.  Should be between 0.0f and 1.0f. */ 
 	float b; /*!< The blue component of this color.  Should be between 0.0f and 1.0f. */ 
-} Color3 <name="Color3", comment=CommentColor3>;
+} Color3 <comment=CommentColor3>;
 
 string CommentColor3(Color3 &c) {
     local char buffer[32];

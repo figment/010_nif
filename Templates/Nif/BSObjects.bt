@@ -111,6 +111,12 @@ typedef struct {
 	    SkyrimShaderPropertyFlags1 shaderFlags1;
 	    /*! Skyrim Shader Flags for setting render/shader options. */
 	    SkyrimShaderPropertyFlags2 shaderFlags2;
+
+//if (skyrimShaderType != 0)
+//Printf("%-80s [%3d] %-80s | %3d | %08x %08x | %36s %36s\n", 
+//    SubStr(GetFileName(),17), block_idx,  CommentNiObject(base), skyrimShaderType, shaderFlags1, shaderFlags2,
+//    IntToBinaryStr(shaderFlags1, 4), IntToBinaryStr( shaderFlags2, 4)
+//);
 	};
 
 	/*! Offset UVs */
@@ -125,7 +131,7 @@ typedef struct {
 	float emissiveMultiple;
 
     if (isFallout4)
-        Ref wetMaterialNameId <comment="New: Fallout 4">;
+        Ref rootMaterialName <comment="New: Fallout 4">;
 
 	/*! How to handle texture borders. */
 	TexClampMode textureClampMode;
@@ -147,24 +153,31 @@ typedef struct {
 
     if (isFallout4) {
         float unk <comment="0">;
-        float unk <comment="0.502">;
-        float unk <comment="5">;
-        float unk <comment="0.25">;
-        float unk <comment="1.7">;
-        float unk <comment="0.4">;
-        float unk <comment="2">;
-        float unk <comment="0.75">;
-        float unk <comment="0.3">;
+        float GrayscaleToPaletteScale <comment="0.502">;
+        float FresnelPower <comment="5">;
+        float WetnessControlSpecScale <comment="0.25">;
+        float WetnessControlSpecPowerScale <comment="1.7">;
+        float WetnessControlSpecMinvar <comment="0.4">;
+        float WetnessControlEnvMapScale <comment="2">;
+        float WetnessControlFresnelPower <comment="0.75">;
+        float WetnessControlMetalness <comment="0.3">;
     }
 	if ( (skyrimShaderType == 1) ) {
 	    /*! Scales the intensity of the environment/cube map. (0-1) */
 	    float environmentMapScale;
-        if (isFallout4)
+        if (isFallout4) {
             ushort unk;
+if (unk > 0) {
+Printf("%-80s [%3d] %-80s | %d | %04x\n", 
+    SubStr(GetFileName(),17), block_idx,  CommentNiObject(base), (int)unk, (int)unk
+);
+Warning("Match");
+}
+        }
 	};
 	if ( (skyrimShaderType == 5) ) {
 	    /*! Tints the base texture. Overridden by game settings. */
-	    Color3 skinTintColor;
+	    Color3 q;
         if (isFallout4)
             int unk;
 	};
@@ -226,39 +239,44 @@ typedef struct {
 	/*! How to handle texture borders. */
 	TexClampMode textureClampMode : 4;
 	unsigned int flags : 28;
-    if(!isFallout4) {
-	    /*! At this cosine of angle falloff will be equal to Falloff Start Opacity */
-	    float falloffStartAngle;
-	    /*! At this cosine of angle falloff will be equal to Falloff Stop Opacity */
-	    float falloffStopAngle;
-	    /*! Alpha falloff multiplier at start angle */
-	    float falloffStartOpacity;
-	    /*! Alpha falloff multiplier at end angle */
-	    float falloffStopOpacity;
-	    /*! Emissive color */
-	    Color4 emissiveColor;
-	    /*! Multiplier for Emissive Color (RGB part) */
-	    float emissiveMultiple;
-	    /*! Unknown. */
-	    float softFalloffDepth;
-	    /*!
-	     * Points to an external texture, used as palette for
-	     * SLSF1_Greyscale_To_PaletteColor/SLSF1_Greyscale_To_PaletteAlpha.
-	     */
-	    NiString greyscaleTexture;
-    }
-    if(isFallout4) {
-        float unkdata [10];
-        NiString  textures[4]<optimize=false>;
-        float unk;
-        //unsigned int unk;  // not in PipboyDusty.nif  (probably based on flags)
-        //unsigned int unk;  // not in PipboyDusty.nif (probably based on flags)
+	/*! At this cosine of angle falloff will be equal to Falloff Start Opacity */
+	float falloffStartAngle;
+	/*! At this cosine of angle falloff will be equal to Falloff Stop Opacity */
+	float falloffStopAngle;
+	/*! Alpha falloff multiplier at start angle */
+	float falloffStartOpacity;
+	/*! Alpha falloff multiplier at end angle */
+	float falloffStopOpacity;
+	/*! Emissive color */
+	Color4 emissiveColor;
+	/*! Multiplier for Emissive Color (RGB part) */
+	float emissiveMultiple;
+	/*! Unknown. */
+	float softFalloffDepth;
+	/*!
+	 * Points to an external texture, used as palette for
+	 * SLSF1_Greyscale_To_PaletteColor/SLSF1_Greyscale_To_PaletteAlpha.
+	 */
+	NiString greyscaleTexture;
+	NiString envMapTexture;
+	NiString normalTexture;
+	NiString envMaskTexture;
+	float environmentMapScale;
+//unsigned int unk;  // not in PipboyDusty.nif  (probably based on flags)
+//unsigned int unk;  // not in PipboyDusty.nif (probably based on flags)
 // Meshes\AnimObjects\LibertyPrimeAnimObject.nif
 //Meshes\Actors\LibertyPrime\LibertyPrimeHeadShoot01.nif
-    } 
 
-} BSEffectShaderProperty <name="BSEffectShaderProperty">;
+Printf("%-80s [%3d] %-80s | %08x %08x | %36s %36s\n", 
+    SubStr(GetFileName(),17), block_idx,  CommentNiObject(base), shaderFlags1, shaderFlags2,
+    IntToBinaryStr(shaderFlags1, 4), IntToBinaryStr( shaderFlags2, 4)
+);
 
+} BSEffectShaderProperty <name="BSEffectShaderProperty", comment=CommentBSEffectShaderProperty>;
+
+string CommentBSEffectShaderProperty(BSEffectShaderProperty& value) {
+    return CommentNiObject(value.base);
+}
 
 
 typedef struct {

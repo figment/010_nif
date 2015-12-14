@@ -50,7 +50,7 @@ typedef struct {
 } NiObject <name="NiObject", comment=CommentNiObject>;
 
 string CommentNiObject(NiObject& obj) {
-    if (exists(header))
+    if (exists(header) && obj.name.value >= 0)
         return CommentNiString (header.strings[obj.name.value]);
     return "";
 }

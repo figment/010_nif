@@ -27,8 +27,20 @@ typedef struct  {
     int numBones;
     Ref bones[numBones] <comment=CommentSkinBone>;
     int numWeights;
-    if (numWeights > 0)
-        Vector3 weights[numWeights];
+    if (numWeights > 0) {
+        //Vector3 weights[numWeights];
+
+local int iweight;
+for (iweight=0;iweight<numWeights;++iweight) {
+Vector3 weights;
+//if (weights.x != 0.0f || weights.y != 1.0f || weights.z != 1.0f) {
+//Printf("%-80s [%3d] | %3d | %s\n", 
+//    SubStr(GetFileName(),17), block_idx, iweight, CommentVector3(weights)
+//);
+//Warning("Match");
+//}
+//}
+    }
 } BSSkin_Instance <name="BSSkin::Instance">;
 
 string CommentSkinBone(Ref& ref) {
@@ -102,22 +114,6 @@ typedef struct {
 } bhkNPCollisionObject <name="bhkNPCollisionObject">;
 
 //////////////////////////////////////////////////
-typedef struct {
-    hfloat x;
-    hfloat y;
-    hfloat z;
-
-    // 0 flags7 == 00000000
-    // 2 flags7 == 00000000
-    // 3 flags7 == 00000000
-    // 4 flags7 == 00000000 or 00000010
-    // 5 flags7 == 00000000 or 00000001
-    // 6 flags7 == 00000100 or 00000011
-    // 7 flags7 == 00000110
-    // 8 flasg7 == 00000101
-    // 9 flasg7 == 00000111
-    //10 flags7 == 00010001
-
     // 0 Meshes\Actors\Vertibird\CharacterAssets\VbirdDeathExplosion.nif
     // 2 Meshes\Terrain\Commonwealth\Commonwealth.4.24.52.BTR
     // 3 Meshes\Actors\LibertyPrime\LibertyPrimeHSBodyLights.nif
@@ -129,13 +125,25 @@ typedef struct {
     // 9 Meshes\Actors\Character\CharacterAssets\Hair\Female\FemaleHair05.nif
     //10 Meshes\Actors\Character\CharacterAssets\FaceParts\MaleEyes.nif
 
-//        if (flag1 == 6 && unk == 0xFFFF) 
-//            Printf("%-60s [%3d] %2d, unk: %04x\n", GetFileName(), block_idx, flag1, unk);
-
-    if ((flag6 & 0x80) && (flag3 & 0x40)) {
-        hfloat bitangent_x <comment="Possible Face Weight (or vert/uv dot product)">;
+typedef struct {
+    if (flag7 & 0x40) {
+        float x;
+        float y;
+        float z;
+        if ((flag6 & 0x80) && (flag3 & 0x40)) {
+            float bitangent_x <comment="Possible Face Weight (or vert/uv dot product)">;
+        } else {
+            uint normal_nybble <format=hex>; // Not dot product        
+        }
     } else {
-        ushort normal_nybble <format=hex>; // Not dot product        
+        hfloat x;
+        hfloat y;
+        hfloat z;
+        if ((flag6 & 0x80) && (flag3 & 0x40)) {
+            hfloat bitangent_x <comment="Possible Face Weight (or vert/uv dot product)">;
+        } else {
+            ushort normal_nybble <format=hex>; // Not dot product        
+        }
     }
     if (flag6 & 0x20) {
         hfloat ux;
@@ -201,9 +209,10 @@ typedef struct {
     int triVertBlockSize;
     if (triVertBlockSize > 0) {  // LibertyPrimeHeadShoot01.nif
         local int vertidx;
-        for (vertidx=0;vertidx<numVerts;++vertidx)
-            VERTDATA verts;
+        //for (vertidx=0;vertidx<numVerts;++vertidx)
+        //    VERTDATA verts;
         //VERTDATA verts[numVerts]<optimize=false>;
+        VERTDATA verts[numVerts];
         Triangle tris[numTris];
     }
 } BSTriShape <name="BSTriShape", comment=CommentBSTriShape>;
@@ -213,48 +222,49 @@ string CommentBSTriShape(BSTriShape& obj) {
 }
 
 
-typedef struct {
-    BSTriShape base <open=true>;
-    int numTris;
 
-    typedef struct 
-    {
-        int start<comment="Start of previous subshape = start(prev) * count(prev)*3">;
-        int count<comment="Count of faces?">;
-        int unknown<comment="Usually -1">;
+typedef struct 
+{
+    int start<comment="Start of previous subshape = start(prev) * count(prev)*3">;
+    int count<comment="Count of faces?">;
+    int unknown<comment="Usually -1">;
 //if (unknown != -1)
 //Printf("%-120s [%3d] %-30s %-5d %-5d %-3d\n", 
 //    GetFileName(), block_idx, CommentBSTriShape(base), start, count, unknown
 //);
 
-        int numSubSegments;
-        typedef struct {
-            int indexStart<comment="=start(Prev) + count(Prev)*3">;
-            int count <comment="count*3">;
-            int unknown<comment="Same for each Subshape, increases each block. Matches second block array">;
-            int unknown<comment="0">;
-        } BSSITSSubSegment; 
-        if (numSubSegments > 0)
-            BSSITSSubSegment numSubSegment[numSubSegments]<name="SubSegment">;
-    } BSSITSSegment;
-    
-    struct BSSIMaterial
-    {
-        int bodyPartType;
-        int materialHash<format=hex>;
-        int numUnks;
-        if (numUnks > 0)
-            float unk2[numUnks];
-    } ;
+    int numSubSegments;
+    typedef struct {
+        int indexStart<comment="=start(Prev) + count(Prev)*3">;
+        int count <comment="count*3">;
+        int unknown<comment="Same for each Subshape, increases each block. Matches second block array">;
+        int unknown<comment="0">;
+    } BSSITSSubSegment; 
+    if (numSubSegments > 0)
+        BSSITSSubSegment numSubSegment[numSubSegments]<name="SubSegment">;
+} BSSITSSegment;
 
-    struct BSSIMaterialSection
-    {
-        int numSegments <comment="Sizes again?">;
-        int numMaterials <comment="Sizes again?">;
-        int emptyMaterials[numSegments]<comment="Matches index in subshape">;
-        BSSIMaterial materials[numMaterials]<name="Material",optimize=false>;
-        LongString ssf;
-    };
+struct BSSIMaterial
+{
+    int bodyPartType;
+    int materialHash<format=hex>;
+    int numUnks;
+    if (numUnks > 0)
+        float unk2[numUnks];
+} ;
+
+struct BSSIMaterialSection
+{
+    int numSegments <comment="Sizes again?">;
+    int numMaterials <comment="Sizes again?">;
+    int emptyMaterials[numSegments]<comment="Matches index in subshape">;
+    BSSIMaterial materials[numMaterials]<name="Material",optimize=false>;
+    LongString ssf;
+};
+
+typedef struct {
+    BSTriShape base <open=true>;
+    int numTris;
     int numSegments;
     int numMaterials;
     BSSITSSegment segments[numSegments]<optimize=false, name="Subshape">;
@@ -276,25 +286,69 @@ typedef struct {
 } BSMeshLODTriShape;
 
 typedef struct {
-    // #warning "TODO:  Finish parsing this"
     IndexString name;
-    int flags1<format=hex>;
-    int flags2<format=hex>;
-    int unk;
-    int unk;
-    int unk;
-    int unk;
-    int unk;
-    int unk;
-    int unk;
-    int unk;
-    int unk;
-    int unk;
+    byte flag1 <comment="Vertex Data Type">;
+    byte flag2 <format=hex,comment="2">;
+    byte flag3 <format=hex,comment="43h">;
+    byte flag4 <format=hex, comment="0 or 50h">;
+    byte flag5 <format=hex>;
+    byte flag6 <format=hex,comment="B0h">;
+    byte flag7 <format=hex,comment="05h">;
+    byte flag8 <format=hex>;
 
-    float unk;
-    int unk;
-    int unk;
-//    int numData;
-//    if (numData>0)
-//    Ref data[numData];
+typedef struct {
+    hfloat x;
+    hfloat y;
+    hfloat z;
+    hfloat ux;
+} PACKEDVERTDATA ;
+
+    int numVerts;
+    int numTris;
+    if (info_userVersion2 > 0x80) {
+        int unk;
+        int unk;
+    }
+    int x;
+    // PACKEDVERTDATA x;
+    local int i,j,k;
+    for (i=0;i<x;++i) {
+        int unk0;
+        int unk1;
+        for (j=0;j<3;++j) {
+            int unk2;
+            int unk3;
+        }
+        int y;
+        for (j=0;j<y;++j) {
+            if (info_userVersion2 > 0x7B) 
+                int unk4;
+            for (k=0;k<8;k++){
+                int unk5;
+            }
+            for (k=0;k<3;k++){
+                int unk6;
+            }
+            int unk7;
+            if (info_userVersion2 > 0x7E) 
+                int unk8;
+            int z;
+            int z;
+            for (k=0;k<z;k++){
+                
+            }
+        }
+    
+    }
+
+
+//    Triangle tris[numTris];
+
+    // #warning "TODO:  Finish parsing this"
+//    int numTris;
+//    int numSegments;
+//    int numMaterials;
+//    BSSITSSegment segments[numSegments]<optimize=false, name="Subshape">;
+//    if (numMaterials > numSegments)
+//        BSSIMaterialSection materialSections;
 } BSPackedCombinedSharedGeomDataExtra;

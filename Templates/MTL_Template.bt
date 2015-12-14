@@ -13,4 +13,5 @@
 MaterialHeader hdr;
 if (hdr.Signature == "BGSM")
     BGSMFile bgsm;
-
+if (hdr.Signature == "BGEM")
+    BGEMFile bgem;

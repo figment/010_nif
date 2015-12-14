@@ -137,4 +137,9 @@ else if (Stricmp(ext,".BGSM") == 0 ) {
     if (header.Signature == "BGSM")
         BGSMFile bgsm;
 }
+else if (Stricmp(ext,".BGEM") == 0 ) {
+    MaterialHeader header;
+    if (header.Signature == "BGEM")
+        BGEMFile bgem;
+}
 
